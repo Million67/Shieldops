@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign up · ThreatTalk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="auth-page">
+
+  <header class="site-header">
+    <a class="brand" href="threattalk.html">
+      <img class="brand-logo" src="logo.png" alt="ShieldOps logo">
+      <div>
+        <p class="brand-name">ThreatTalk</p>
+        <p class="brand-tagline">Reimagining of cybersecurity through intelligent, adaptive conversation.</p>
+      </div>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      <a class="nav-link" href="#about">About Us</a>
+      <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
+      <button class="nav-icon" type="button" aria-label="Language">🌐</button>
+      <div class="streak">
+        <button class="nav-icon" type="button" aria-label="Daily streak">🔥</button>
+        <span class="chip">keep streak?</span>
+      </div>
+      <span class="nav-gap" aria-hidden="true"></span>
+      <button class="chip" type="button" aria-disabled="true" tabindex="-1">Learn</button>
+      <button class="chip" type="button" aria-disabled="true" tabindex="-1">Quiz</button>
+      <button class="chip" type="button" aria-disabled="true" tabindex="-1">Profile</button>
+    </nav>
+  </header>
+
+  <main class="auth">
+    <form class="signup-form" action="#" method="post">
+      <div class="auth-card auth-card--signup">
+        <div class="signup-panel">
+
+          <div class="form-row">
+            <input type="text" name="firstName" placeholder="First Name" aria-label="First name" autocomplete="given-name" required>
+          </div>
+
+          <div class="form-row">
+            <input type="text" name="lastName" placeholder="Last Name" aria-label="Last name" autocomplete="family-name" required>
+          </div>
+
+          <div class="form-row">
+            <label for="birthdate">Birth Date</label>
+            <div class="date-pill">
+              <span id="birthdate-label">Jan 2004</span>
+              <input type="date" id="birthdate" name="birthdate" value="2004-01-01" autocomplete="bday">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <input type="text" name="department" placeholder="Department" aria-label="Department" autocomplete="organization-title">
+          </div>
+
+          <div class="form-row">
+            <input type="email" name="email" placeholder="Email Address" aria-label="Email address" autocomplete="email" required>
+          </div>
+
+          <div class="form-row">
+            <input type="tel" name="phone" placeholder="Phone Number" aria-label="Phone number" autocomplete="tel">
+          </div>
+
+          <div class="form-row">
+            <input type="password" id="password" name="password" placeholder="Password" aria-label="Password" autocomplete="new-password" required>
+          </div>
+
+          <div class="form-row">
+            <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm Password" aria-label="Confirm password" autocomplete="new-password" required>
+          </div>
+
+          <div class="form-row form-row--save">
+            <button class="save-btn" type="submit">Save</button>
+          </div>
+
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <script src="signup.js"></script>
+</body>
+</html>

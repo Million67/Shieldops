@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in · ThreatTalk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="auth-page">
+
+  <header class="site-header">
+    <a class="brand" href="threattalk.html">
+      <img class="brand-logo" src="logo.png" alt="ShieldOps logo">
+      <div>
+        <p class="brand-name">ThreatTalk</p>
+        <p class="brand-tagline">Reimagining of cybersecurity through intelligent, adaptive conversation.</p>
+      </div>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      <a class="nav-link" href="#about">About Us</a>
+      <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
+      <button class="nav-icon" type="button" aria-label="Language">🌐</button>
+      <div class="streak">
+        <button class="nav-icon" type="button" aria-label="Daily streak">🔥</button>
+        <span class="chip">keep streak?</span>
+      </div>
+      <span class="nav-gap" aria-hidden="true"></span>
+      <button class="chip" type="button" aria-disabled="true" tabindex="-1">Learn</button>
+      <button class="chip" type="button" aria-disabled="true" tabindex="-1">Quiz</button>
+      <button class="chip" type="button" aria-disabled="true" tabindex="-1">Profile</button>
+    </nav>
+  </header>
+
+  <main class="auth">
+    <form class="login-form" action="#" method="post">
+      <div class="auth-card auth-card--login">
+        <div class="login-panel">
+          <h1 class="login-title">You will use this to login to ThreatTalk.</h1>
+
+          <div class="login-fields">
+            <div class="login-field">
+              <input type="email" name="email" placeholder="Email address" aria-label="Email address" autocomplete="email" required>
+            </div>
+            <div class="login-field">
+              <input type="password" name="password" placeholder="Password" aria-label="Password" autocomplete="current-password" required>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-pill" type="submit">Continue</button>
+    </form>
+  </main>
+
+</body>
+</html>
