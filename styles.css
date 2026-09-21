@@ -1,0 +1,381 @@
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --muted: #8a8a8a;
+  --faint: #c4c4c4;
+  --line: #e6e6e6;
+  --chip-bg: #f4f4f4;
+  --card-bg: #d9d9d9;
+  --link: #1f2350;
+
+  /* auth screens */
+  --navy: #031628;
+  --panel-frost: #949ebb;
+  --field-frost: #8a92af;
+  --btn-blue: #2c5a97;
+  --ios-blue: #1a8cf0;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 45px;
+  padding: 0 12px 0 2px;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex: none;
+  display: block;
+}
+
+.brand-name {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.brand-tagline {
+  margin: 1px 0 0;
+  font-size: 9.5px;
+  line-height: 1.3;
+  color: var(--muted);
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: none;
+}
+
+.nav-link {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  margin-right: 1px;
+}
+.nav-link:hover { color: var(--text); }
+
+.nav-icon {
+  font-size: 19px;
+  line-height: 1;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.chip {
+  font: inherit;
+  font-size: 10.5px;
+  color: var(--faint);
+  background: var(--chip-bg);
+  border: 0;
+  border-radius: 4px;
+  padding: 4px 12px;
+  line-height: 1.2;
+}
+
+.chip[aria-disabled="true"] { cursor: default; }
+
+.streak {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+.streak .chip {
+  padding: 2px 3px;
+  margin-left: 1px;
+}
+
+.nav-gap { width: 13px; }
+
+/* ---------- Login card ---------- */
+main {
+  display: flex;
+  justify-content: center;
+  padding: 132px 16px 48px;
+}
+
+.welcome-card {
+  width: 100%;
+  max-width: 539px;
+  min-height: 177px;
+  padding: 13px 24px 50px;
+  background: var(--card-bg);
+  border-radius: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.welcome-logo {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  display: block;
+}
+
+.welcome-title {
+  margin: 6px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+
+.welcome-actions {
+  margin: 1px 0 0;
+  font-size: 12px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.welcome-actions a {
+  color: var(--link);
+  font-weight: 600;
+  text-decoration: none;
+}
+.welcome-actions a:hover { text-decoration: underline; }
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 760px) {
+  .site-header { flex-wrap: wrap; padding: 8px 12px; }
+  .site-nav { flex-wrap: wrap; gap: 8px; }
+  .nav-gap { display: none; }
+  .brand-tagline { display: none; }
+  main { padding-top: 56px; }
+}
+
+/* ==========================================================
+   Auth screens (login + signup)
+   ========================================================== */
+
+.auth-page {
+  height: auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth {
+  flex: 1;
+  align-items: center;
+  padding: 32px 16px 48px;
+}
+
+.auth-card {
+  width: 100%;
+  background: var(--navy);
+}
+
+/* ---------- Login ---------- */
+.login-form {
+  width: 100%;
+  max-width: 245px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-card--login {
+  padding: 42px 14px 43px;
+  border-radius: 22px;
+}
+
+.login-panel {
+  padding: 14px 10px 24px;
+  background: var(--panel-frost);
+  border-radius: 28px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+              0 0 18px rgba(120, 140, 200, 0.15);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.login-title {
+  margin: 0 0 24px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  color: #0c1428;
+}
+
+.login-fields {
+  background: var(--field-frost);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.login-field { position: relative; }
+
+.login-field + .login-field::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 11px;
+  right: 11px;
+  border-top: 1px solid rgba(20, 30, 60, 0.22);
+}
+
+.login-field input {
+  display: block;
+  width: 100%;
+  height: 37px;
+  padding: 0 11px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  color: #0d1630;
+  outline: none;
+}
+
+.login-field input::placeholder { color: #6f789b; }
+
+.login-field:focus-within { background: rgba(255, 255, 255, 0.14); }
+
+.btn-pill {
+  min-width: 110px;
+  height: 34px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--btn-blue);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-pill:hover { background: #274f87; }
+
+/* ---------- Signup ---------- */
+.signup-form {
+  width: 100%;
+  max-width: 313px;
+}
+
+.auth-card--signup {
+  padding: 24px 26px;
+  border-radius: 24px;
+}
+
+.signup-panel {
+  padding: 0 11px;
+  background: #fff;
+  border-radius: 26px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 37.7px;
+  border-bottom: 1px solid #e4e4e4;
+  transition: border-color 0.15s;
+}
+
+.form-row:focus-within { border-bottom-color: var(--ios-blue); }
+
+.form-row input:not([type="date"]) {
+  width: 100%;
+  height: 37px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+}
+
+.form-row input::placeholder { color: #c2c2c2; }
+
+.form-row label {
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* Birth date "Jan 2004" pill (native date input sits invisibly on top) */
+.date-pill {
+  position: relative;
+  flex: none;
+  padding: 4px 9px;
+  border-radius: 9px;
+  background: #ececec;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.date-pill input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.date-pill:focus-within {
+  outline: 2px solid var(--ios-blue);
+  outline-offset: 2px;
+}
+
+.form-row--save { border-bottom: 0; }
+
+.save-btn {
+  width: 100%;
+  min-height: 37.7px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ios-blue);
+  cursor: pointer;
+}
+.save-btn:hover { text-decoration: underline; }
