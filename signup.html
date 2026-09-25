@@ -36,7 +36,10 @@
   </header>
 
   <main class="auth">
-    <form class="signup-form" action="#" method="post">
+    <!-- TEMPORARY: no auth backend yet, so Create Account just navigates to the login page.
+         Once accounts are wired up, point this at the real signup endpoint and only
+         redirect to login.html after a successful response. -->
+    <form class="signup-form" action="login.html" method="get">
       <div class="auth-card auth-card--signup">
         <div class="signup-panel">
 
@@ -61,7 +64,7 @@
           </div>
 
           <div class="form-row form-row--save">
-            <button class="save-btn" type="submit">Save</button>
+            <button class="save-btn" type="submit">Create Account</button>
           </div>
 
         </div>
