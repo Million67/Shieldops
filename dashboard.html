@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard · ThreatTalk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="threattalk.html">
+      <img class="brand-logo" src="logo.png" alt="ShieldOps logo">
+      <div>
+        <p class="brand-name">ThreatTalk</p>
+        <p class="brand-tagline">Reimagining of cybersecurity through intelligent, adaptive conversation.</p>
+      </div>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      <a class="nav-link nav-link--active" href="#about">About Us</a>
+      <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
+      <button class="nav-icon" type="button" aria-label="Language">🌐</button>
+      <div class="streak">
+        <button class="nav-icon" type="button" aria-label="Daily streak">🔥</button>
+        <span class="chip">keep streak?</span>
+      </div>
+      <span class="nav-gap" aria-hidden="true"></span>
+      <button class="chip chip--active" type="button">Learn</button>
+      <button class="chip chip--active" type="button">Quiz</button>
+      <button class="chip chip--active" type="button">Profile</button>
+    </nav>
+  </header>
+
+  <main class="dashboard">
+    <div class="dashboard-hero">
+      <img class="dashboard-logo" src="logo.png" alt="ShieldOps logo">
+      <h1 class="dashboard-title">Welcome, Security Learner!</h1>
+      <p class="dashboard-subtitle">Learn cybersecurity through interactive conversations, earn points, unlock achievements, and track your progress at Shield Ops!</p>
+    </div>
+
+    <hr class="dashboard-divider">
+
+    <div class="feature-grid">
+      <button class="feature-card" type="button">
+        <span class="feature-icon feature-icon--phishing">📧</span>
+        Phishing Emails
+      </button>
+      <button class="feature-card" type="button">
+        <span class="feature-icon feature-icon--password">🔐</span>
+        Password Security
+      </button>
+      <button class="feature-card" type="button">
+        <span class="feature-icon feature-icon--mfa">🔑</span>
+        Multi-Factor Authentication
+      </button>
+      <button class="feature-card" type="button">
+        <span class="feature-icon feature-icon--data">🚫</span>
+        Data Protection
+      </button>
+      <button class="feature-card" type="button">
+        <span class="feature-icon feature-icon--browsing">💻</span>
+        Safe Browsing
+      </button>
+      <button class="feature-card" type="button">
+        <span class="feature-icon feature-icon--report">⚠️</span>
+        Report Incident
+      </button>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <span class="info-icon">📊</span>
+        <div>
+          <p class="info-title">Your Progress</p>
+          <ul class="info-list">
+            <li>Risk Awareness: 40.5/100</li>
+            <li>Points Earned: 55</li>
+            <li>Achievements: 2/10</li>
+          </ul>
+        </div>
+      </div>
+      <div class="info-card">
+        <span class="info-icon">📚</span>
+        <div>
+          <p class="info-title">Weekly Quiz</p>
+          <p class="info-text">Test your knowledge and earn up to 1000 points! Click to start.</p>
+        </div>
+      </div>
+    </div>
+
+    <form class="dashboard-composer" action="#" method="get">
+      <input type="text" name="prompt" placeholder="Ask about phishing, passwords, data security, or any security topic ...">
+    </form>
+  </main>
+
+</body>
+</html>
