@@ -36,7 +36,10 @@
   </header>
 
   <main class="auth">
-    <form class="login-form" action="#" method="post">
+    <!-- TEMPORARY: no auth backend yet, so Continue just navigates to the dashboard.
+         Once accounts are wired up, point this at the real login endpoint and only
+         redirect to dashboard.html after a successful response. -->
+    <form class="login-form" action="dashboard.html" method="get">
       <div class="auth-card auth-card--login">
         <div class="login-panel">
           <h1 class="login-title">You will use this to login to ThreatTalk.</h1>
