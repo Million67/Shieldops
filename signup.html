@@ -36,12 +36,12 @@
   </header>
 
   <main class="auth">
-    <!-- TEMPORARY: no auth backend yet, so Create Account just navigates to the login page.
-         Once accounts are wired up, point this at the real signup endpoint and only
-         redirect to login.html after a successful response. -->
-    <form class="signup-form" action="login.html" method="get">
+    <!-- Posts to /api/signup (see server index.js). On success, redirects to login.html. -->
+    <form class="signup-form" id="signup-form" action="/api/signup" method="post" novalidate>
       <div class="auth-card auth-card--signup">
         <div class="signup-panel">
+
+          <p class="form-error" id="form-error" role="alert" hidden></p>
 
           <div class="form-row">
             <input type="text" name="firstName" placeholder="First Name" aria-label="First name" autocomplete="given-name" required>
@@ -56,11 +56,11 @@
           </div>
 
           <div class="form-row">
-            <input type="password" id="password" name="password" placeholder="Password" aria-label="Password" autocomplete="new-password" required>
+            <input type="password" id="password" name="password" placeholder="Password" aria-label="Password" autocomplete="new-password" minlength="8" required>
           </div>
 
           <div class="form-row">
-            <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm Password" aria-label="Confirm password" autocomplete="new-password" required>
+            <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm Password" aria-label="Confirm password" autocomplete="new-password" minlength="8" required>
           </div>
 
           <div class="form-row form-row--save">
