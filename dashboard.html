@@ -31,14 +31,19 @@
       <span class="nav-gap" aria-hidden="true"></span>
       <button class="chip chip--active" type="button">Learn</button>
       <button class="chip chip--active" type="button">Quiz</button>
-      <button class="chip chip--active" type="button">Profile</button>
+      <div class="profile-menu">
+        <button class="chip chip--active" type="button" id="profile-button" aria-haspopup="true" aria-expanded="false">Profile</button>
+        <div class="profile-dropdown" id="profile-dropdown" hidden>
+          <button class="profile-dropdown-item" type="button" id="logout-button">Log out</button>
+        </div>
+      </div>
     </nav>
   </header>
 
   <main class="dashboard">
     <div class="dashboard-hero">
       <img class="dashboard-logo" src="logo.png" alt="ShieldOps logo">
-      <h1 class="dashboard-title">Welcome, Security Learner!</h1>
+      <h1 class="dashboard-title" id="dashboard-title">Welcome, Security Learner!</h1>
       <p class="dashboard-subtitle">Learn cybersecurity through interactive conversations, earn points, unlock achievements, and track your progress at Shield Ops!</p>
     </div>
 
@@ -76,5 +81,6 @@
     </form>
   </main>
 
+  <script src="dashboard.js"></script>
 </body>
 </html>
