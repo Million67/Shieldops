@@ -36,13 +36,13 @@
   </header>
 
   <main class="auth">
-    <!-- TEMPORARY: no auth backend yet, so Continue just navigates to the dashboard.
-         Once accounts are wired up, point this at the real login endpoint and only
-         redirect to dashboard.html after a successful response. -->
-    <form class="login-form" action="dashboard.html" method="get">
+    <!-- Posts to /api/login (see server index.js). On success, redirects to dashboard.html. -->
+    <form class="login-form" id="login-form" action="/api/login" method="post" novalidate>
       <div class="auth-card auth-card--login">
         <div class="login-panel">
           <h1 class="login-title">You will use this to login to ThreatTalk.</h1>
+
+          <p class="form-error" id="form-error" role="alert" hidden></p>
 
           <div class="login-fields">
             <div class="login-field">
@@ -59,5 +59,6 @@
     </form>
   </main>
 
+  <script src="login.js"></script>
 </body>
 </html>
