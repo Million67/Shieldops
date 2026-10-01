@@ -574,3 +574,54 @@ a:focus-visible, button:focus-visible {
   cursor: default;
   text-decoration: none;
 }
+
+.btn-pill:disabled {
+  background: #9db8d8;
+  cursor: default;
+}
+
+/* ==========================================================
+   Dashboard — Profile dropdown
+   ========================================================== */
+
+.profile-menu {
+  position: relative;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 140px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 10;
+}
+
+.profile-dropdown[hidden] { display: none; }
+
+.profile-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b3261e;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile-dropdown-item:hover { background: #fdecea; }
+
+.profile-dropdown-item:disabled {
+  color: #c98f8a;
+  cursor: default;
+  background: none;
+}
