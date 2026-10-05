@@ -460,6 +460,7 @@ a:focus-visible, button:focus-visible {
   font-weight: 600;
   color: var(--text);
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
   transition: background 0.15s, box-shadow 0.15s;
 }
@@ -625,3 +626,32 @@ a:focus-visible, button:focus-visible {
   cursor: default;
   background: none;
 }
+
+/* ==========================================================
+   Under Construction page
+   ========================================================== */
+
+.under-construction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 56px 16px 64px;
+}
+
+.under-construction-img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border-radius: 16px;
+}
+
+.under-construction-link {
+  margin-top: 28px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--link);
+  text-decoration: none;
+}
+
+.under-construction-link:hover { text-decoration: underline; }
