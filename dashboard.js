@@ -4,17 +4,21 @@
   var logoutButton = document.getElementById('logout-button');
   var titleEl = document.getElementById('dashboard-title');
 
-  // Show the signed-in user's name once we know it
-  fetch('/api/me')
-    .then(function (response) { return response.json(); })
-    .then(function (data) {
-      if (data && data.user && data.user.firstName) {
-        titleEl.textContent = 'Welcome, ' + data.user.firstName + '!';
-      }
-    })
-    .catch(function () {
-      // If this fails, the generic "Security Learner" greeting just stays put.
-    });
+  // Show the signed-in user's name once we know it (only on pages that have
+  // a #dashboard-title element — e.g. not under-construction.html, which
+  // reuses this file just for the Profile dropdown and logout).
+  if (titleEl) {
+    fetch('/api/me')
+      .then(function (response) { return response.json(); })
+      .then(function (data) {
+        if (data && data.user && data.user.firstName) {
+          titleEl.textContent = 'Welcome, ' + data.user.firstName + '!';
+        }
+      })
+      .catch(function () {
+        // If this fails, the generic "Security Learner" greeting just stays put.
+      });
+  }
 
   function openDropdown() {
     dropdown.hidden = false;
