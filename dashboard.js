@@ -69,3 +69,20 @@
       });
   });
 })();
+
+// Privacy / cookie banner — opened only via the ⓘ icon, not shown on load.
+// Guarded with a null check since under-construction.html loads this same
+// file but doesn't have a #privacyBanner element.
+function dismissPrivacyBanner() {
+  var banner = document.getElementById('privacyBanner');
+  if (banner) {
+    banner.classList.add('hidden');
+  }
+}
+
+function togglePrivacyBanner() {
+  var banner = document.getElementById('privacyBanner');
+  if (banner) {
+    banner.classList.remove('hidden');
+  }
+}
