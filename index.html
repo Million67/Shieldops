@@ -21,7 +21,7 @@
     </a>
 
     <nav class="site-nav" aria-label="Main">
-      <button class="nav-icon" type="button" aria-label="cookie policy">ⓘ</button>
+      <button class="nav-icon" type="button" aria-label="cookie policy" onclick="togglePrivacyBanner()">ⓘ</button>
       <a class="nav-link" href="#about">About Us</a>
       <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
       <button class="nav-icon" type="button" aria-label="Language">🌐</button>
@@ -59,6 +59,10 @@
   <script>
     function dismissPrivacyBanner() {
       document.getElementById('privacyBanner').classList.add('hidden');
+    }
+ 
+    function togglePrivacyBanner() {
+      document.getElementById('privacyBanner').classList.remove('hidden');
     }
   </script>
 </body>
