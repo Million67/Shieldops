@@ -21,6 +21,7 @@
     </a>
 
     <nav class="site-nav" aria-label="Main">
+      <button class="nav-icon" type="button" aria-label="cookie policy" onclick="togglePrivacyBanner()">ⓘ</button>
       <a class="nav-link nav-link--active" href="#about">About Us</a>
       <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
       <button class="nav-icon" type="button" aria-label="Language">🌐</button>
@@ -80,6 +81,17 @@
       <input type="text" name="prompt" placeholder="Ask about phishing, passwords, data security, or any security topic ...">
     </form>
   </main>
+
+  <div id="privacyBanner" class="privacy-cookie-banner hidden">
+    <p class="banner-text">
+      This site uses cookies. This website uses cookies and similar technology to support chatbot functionality, track your progress through modules and quizzes, and improve your overall experience.
+      When you create an account, we may collect personal information such as your name, date of birth, email address, phone number, and quiz performance data to provide personalized features like ratings and progress tracking. By clicking "Accept All", you agree to our use of cookies. You can learn more in our <a href="/idkyet" target="_blank">Privacy Policy</a>.
+    </p>
+    <div class="banner-actions">
+      <button class="accept-btn" onclick="dismissPrivacyBanner()">Got it</button>
+      <button class="close-btn" onclick="dismissPrivacyBanner()" aria-label="Close message">&times;</button>
+    </div>
+  </div>
 
   <script src="dashboard.js"></script>
 </body>
