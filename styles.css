@@ -639,15 +639,21 @@ a:focus-visible, button:focus-visible {
   padding: 56px 16px 64px;
 }
 
+.under-construction-title {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+}
+
 .under-construction-img {
   width: 100%;
-  max-width: 420px;
+  max-width: 720px;
   height: auto;
-  border-radius: 16px;
 }
 
 .under-construction-link {
-  margin-top: 28px;
+  margin-top: 12px;
   font-size: 13px;
   font-weight: 600;
   color: var(--link);
