@@ -21,7 +21,6 @@
     </a>
 
     <nav class="site-nav" aria-label="Main">
-      <button class="nav-icon" type="button" aria-label="cookie policy">ⓘ</button>
       <a class="nav-link" href="#about">About Us</a>
       <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
       <button class="nav-icon" type="button" aria-label="Language">🌐</button>
@@ -46,5 +45,20 @@
     </section>
   </main>
 
+  <div id="privacyBanner" class="privacy-cookie-banner">
+    <p class="banner-text">
+      This website uses cookies and similar technology to support chatbot functionality, track your progress through modules and quizzes, and improve your overall experience.
+      When you create an account, we may collect personal information such as your name, date of birth, email address, phone number, and quiz performance data to provide personalized features like ratings and progress tracking. By clicking "Got It", you agree to our use of cookies. You can learn more in our <a href="/idkyet" target="_blank">Privacy Policy</a>.
+    </p>
+    <div class="banner-actions">
+      <button class="accept-btn" onclick="dismissPrivacyBanner()">Got it</button>
+    </div>
+  </div>
+
+  <script>
+    function dismissPrivacyBanner() {
+      document.getElementById('privacyBanner').classList.add('hidden');
+    }
+  </script>
 </body>
 </html>
