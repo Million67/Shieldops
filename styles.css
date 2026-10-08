@@ -1,8 +1,8 @@
 :root {
   --bg: #ffffff;
   --text: #111111;
-  --muted: #8a8a8a;
-  --faint: #c4c4c4;
+  --muted: #6e6e6e;
+  --faint: #767676;
   --line: #e6e6e6;
   --chip-bg: #f4f4f4;
   --card-bg: #d9d9d9;
@@ -549,7 +549,7 @@ a:focus-visible, button:focus-visible {
   outline: none;
 }
 
-.dashboard-composer input::placeholder { color: #a8a8a8; }
+.dashboard-composer input::placeholder { color: #767676; }
 .dashboard-composer input:focus { border-color: var(--ios-blue); }
 
 @media (max-width: 720px) {
