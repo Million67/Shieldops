@@ -668,9 +668,9 @@ a:focus-visible, button:focus-visible {
    ========================================================== */
 
 .module {
-  max-width: 985px;
-  margin: 0 auto;
-  padding: 32px 16px 48px;
+  width: 100%;
+  margin: 0;
+  padding: 32px 32px 48px;
 }
 
 .module-breadcrumb {
@@ -785,10 +785,10 @@ a:focus-visible, button:focus-visible {
 .chat-shell {
   display: flex;
   flex-direction: column;
-  max-width: 780px;
+  width: 100%;
   height: calc(100dvh - 46px);
-  margin: 0 auto;
-  padding: 16px 16px 20px;
+  margin: 0;
+  padding: 16px 32px 20px;
 }
 
 .chat-topbar {
@@ -865,7 +865,7 @@ a:focus-visible, button:focus-visible {
 
 .chat-bubble {
   position: relative;
-  max-width: 78%;
+  max-width: min(78%, 640px);
   padding: 12px 14px 22px;
   border-radius: 14px;
   font-size: 12.5px;
