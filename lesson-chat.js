@@ -49,6 +49,11 @@
     'strong-passwords': {
       title: 'Creating Stronger Passwords',
       userQuestion: 'What makes a strong password?',
+      
+      bot:{
+        'This is for display purposes only, but please feel free to test of the chat function'
+      },
+      
       bot: {
         icon: '🔒',
         heading: 'Password Security Best Practices',
