@@ -15,12 +15,6 @@
       userQuestion: 'What makes a strong password?',
 
       bot: {
-        heading:'Password Security Best Practices',
-      },
-      
-
-      
-      bot: {
         icon: '🔒',
         heading: 'Password Security Best Practices',
         sections: [
