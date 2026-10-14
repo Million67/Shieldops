@@ -46,6 +46,42 @@
       },
     },
 
+    'strong-passwords': {
+      title: 'Creating Strong Passwords',
+      userQuestion: 'What makes a strong password?',
+      bot: {
+        icon: '🔒',
+        heading: 'Password Security Best Practices',
+        sections: [
+          {
+            heading: 'Creating a Strong Password',
+            items: [
+              'At least 12–16 characters long',
+              'Mix of uppercase, lowercase, numbers, and symbols',
+              'Avoid personal information (birthdays, names, etc.)',
+              "Don't use dictionary words",
+              'Use unique passwords for each account',
+            ],
+          },
+          {
+            heading: 'Password Management Tips',
+            items: [
+              'Use a password manager to store passwords securely',
+              'Enable multi-factor authentication (MFA) whenever possible',
+              'Change passwords immediately if you suspect a breach',
+              'Never share passwords via email or messaging apps',
+              "Don't write passwords on sticky notes or documents",
+            ],
+          },
+        ],
+        example: {
+          label: 'Example of a strong password pattern:',
+          text: 'Instead of "Password123!", try a passphrase like "Coffee!Morning@2026$Blue"',
+        },
+        closing: 'Remember: Length + Complexity + Uniqueness = Strong Password!',
+      },
+    },
+
     'managers-mfa': {
       title: 'Password Managers & MFA',
       userQuestion: 'Why do I need a password manager if I can just remember my passwords?',
