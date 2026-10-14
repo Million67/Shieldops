@@ -47,7 +47,7 @@
     },
 
     'strong-passwords': {
-      title: 'Creating Strong Passwords',
+      title: 'Creating Stronger Passwords',
       userQuestion: 'What makes a strong password?',
       bot: {
         icon: '🔒',
