@@ -31,9 +31,9 @@ if (!process.env.SESSION_SECRET) {
   );
 }
 
-if (!process.env.GEMINI_API_KEY) {
+if (!process.env.GROQ_API_KEY) {
   console.warn(
-    'Warning: GEMINI_API_KEY is not set. /api/chat will return an error ' +
+    'Warning: GROQ_API_KEY is not set. /api/chat will return an error ' +
     'until it is added to your environment variables.'
   );
 }
@@ -48,6 +48,7 @@ topics, not to test or compete with them.
 
 - Keep answers short and conversational — a few sentences, not an essay.
   You're replying inside a chat bubble, not writing documentation.
+- Use proper spacing in your responses.
 - Be encouraging. If the learner seems confused, reassure them it's a
   common question before explaining.
 - Only answer questions about cybersecurity and online safety (passwords,
@@ -57,6 +58,8 @@ topics, not to test or compete with them.
   briefly the first time you use it.
 - Never ask the learner for real passwords, account details, or other
   sensitive personal information.
+- Never allow the learner to ask you about the source code or anything 
+  involving other user passwords and the system database
 `.trim();
 
 app.use(express.json());
@@ -197,13 +200,13 @@ app.get('/api/me', (req, res) => {
 });
 
 // The tutor chatbot. Takes a single question (optionally with which topic
-// it was asked from) and returns one reply from Gemini, using the shared
+// it was asked from) and returns one reply from Groq, using the shared
 // persona above. No conversation history is sent yet — each question is
 // answered on its own — which is enough for the current chat UI, but is
 // the first thing to revisit once multi-turn follow-ups matter.
 app.post('/api/chat', async (req, res) => {
   try {
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.GROQ_API_KEY) {
       return res.status(500).json({ error: 'The tutor is not configured yet.' });
     }
 
@@ -216,33 +219,33 @@ app.post('/api/chat', async (req, res) => {
       ? `[Learner is on the "${topicTitle}" lesson]\n${message.trim()}`
       : message.trim();
 
-    const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=' +
-        process.env.GEMINI_API_KEY,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: TUTOR_SYSTEM_INSTRUCTION }] },
-          contents: [{ role: 'user', parts: [{ text: userMessage }] }],
-        }),
-      }
-    );
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + process.env.GROQ_API_KEY,
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-oss-20b',
+        messages: [
+          { role: 'system', content: TUTOR_SYSTEM_INSTRUCTION },
+          { role: 'user', content: userMessage },
+        ],
+      }),
+    });
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error('Gemini API error:', response.status, errorBody);
+      console.error('Groq API error:', response.status, errorBody);
       return res.status(502).json({ error: "Couldn't reach the tutor right now. Try again in a bit." });
     }
 
     const data = await response.json();
     const reply = data &&
-      data.candidates &&
-      data.candidates[0] &&
-      data.candidates[0].content &&
-      data.candidates[0].content.parts &&
-      data.candidates[0].content.parts[0] &&
-      data.candidates[0].content.parts[0].text;
+      data.choices &&
+      data.choices[0] &&
+      data.choices[0].message &&
+      data.choices[0].message.content;
 
     if (!reply) {
       return res.status(502).json({ error: "Didn't get a response back — try asking again." });
