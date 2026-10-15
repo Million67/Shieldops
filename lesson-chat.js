@@ -229,16 +229,64 @@
   appendUserMessage(topic.userQuestion);
   appendBotCard(topic.bot);
   // Second bot bubble — placeholder for now, content TBD.
-  appendBotPlainReply('This is for display purposes only but feel free to type in chat');
+  appendBotPlainReply('[Second response goes here — not written yet.]');
   scrollToBottom();
 
-  // Placeholder for the real AI call — see note at top of file.
-  function sendToAssistant(userText) {
-    appendBotPlainReply(
-      "I can't answer live questions yet — the AI tutor isn't connected in this beta. " +
-      'For now, take a look at the topic above, and check back soon!'
-    );
+  // Shows a lightweight "thinking…" bubble while we wait on the API, so the
+  // chat doesn't look frozen. Returns a function that removes it again.
+  function showTypingIndicator() {
+    var row = document.createElement('div');
+    row.className = 'chat-row chat-row--bot';
+
+    var avatar = document.createElement('div');
+    avatar.className = 'chat-avatar';
+    avatar.setAttribute('aria-hidden', 'true');
+
+    var bubble = document.createElement('div');
+    bubble.className = 'chat-bubble chat-bubble--bot chat-bubble--typing';
+    bubble.textContent = 'Thinking…';
+
+    row.appendChild(avatar);
+    row.appendChild(bubble);
+    threadEl.appendChild(row);
     scrollToBottom();
+
+    return function removeTypingIndicator() {
+      row.remove();
+    };
+  }
+
+  // Calls the real tutor endpoint (see /api/chat in index.js). The whole
+  // system-instruction/persona setup lives server-side, so this is just a
+  // normal fetch + render.
+  function sendToAssistant(userText) {
+    var hideTyping = showTypingIndicator();
+
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: userText, topicTitle: topic.title }),
+    })
+      .then(function (response) {
+        return response.json().then(function (data) {
+          if (!response.ok) {
+            throw new Error((data && data.error) || 'Request failed');
+          }
+          return data;
+        });
+      })
+      .then(function (data) {
+        hideTyping();
+        appendBotPlainReply(data.reply);
+        scrollToBottom();
+      })
+      .catch(function () {
+        hideTyping();
+        appendBotPlainReply(
+          "Sorry, I couldn't get an answer just now — mind trying again in a moment?"
+        );
+        scrollToBottom();
+      });
   }
 
   if (composerEl) {
