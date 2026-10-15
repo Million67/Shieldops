@@ -13,7 +13,6 @@
     'strong-passwords': {
       title: 'Creating Strong Passwords',
       userQuestion: 'What makes a strong password?',
-
       bot: {
         icon: '🔒',
         heading: 'Password Security Best Practices',
@@ -229,6 +228,8 @@
   // Seed the conversation with the scripted exchange for this topic.
   appendUserMessage(topic.userQuestion);
   appendBotCard(topic.bot);
+  // Second bot bubble — placeholder for now, content TBD.
+  appendBotPlainReply('This is for display purposes only but feel free to type in chat');
   scrollToBottom();
 
   // Placeholder for the real AI call — see note at top of file.
