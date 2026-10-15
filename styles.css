@@ -883,6 +883,12 @@ a:focus-visible, button:focus-visible {
   color: var(--text);
 }
 
+.chat-bubble--typing {
+  font-style: italic;
+  color: var(--faint);
+  padding-bottom: 12px;
+}
+
 .chat-bot-heading {
   margin: 0 0 8px;
   font-size: 13px;
