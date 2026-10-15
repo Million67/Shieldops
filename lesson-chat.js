@@ -229,8 +229,8 @@
   appendUserMessage(topic.userQuestion);
   appendBotCard(topic.bot);
   // Second bot bubble — placeholder for now, content TBD.
-  appendBotPlainReply('[Second response goes here — not written yet.]');
-  scrollToBottom();
+  ///appendBotPlainReply('[Second response goes here — not written yet.]');
+  ///scrollToBottom();
 
   // Shows a lightweight "thinking…" bubble while we wait on the API, so the
   // chat doesn't look frozen. Returns a function that removes it again.
