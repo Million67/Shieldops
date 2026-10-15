@@ -12,7 +12,7 @@
   var TOPICS = {
     'strong-passwords': {
       title: 'Creating Strong Passwords',
-      userQuestion: 'What makes a strong password?',
+      //userQuestion: 'What makes a strong password?',
       bot: {
         icon: '🔒',
         heading: 'Password Security Best Practices',
