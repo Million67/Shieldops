@@ -12,7 +12,7 @@
   var TOPICS = {
     'strong-passwords': {
       title: 'Creating Strong Passwords',
-      //userQuestion: 'What makes a strong password?',
+      userQuestion: 'What makes a strong password?',
       bot: {
         icon: '🔒',
         heading: 'Password Security Best Practices',
@@ -225,12 +225,12 @@
     threadEl.scrollTop = threadEl.scrollHeight;
   }
 
-  // Seed the conversation with the scripted exchange for this topic.
-  appendUserMessage(topic.userQuestion);
+  // Seed the conversation with the bot's opening message for this topic —
+  // no fake user question shown anymore, the lesson just starts talking.
   appendBotCard(topic.bot);
   // Second bot bubble — placeholder for now, content TBD.
-  ///appendBotPlainReply('[Second response goes here — not written yet.]');
-  ///scrollToBottom();
+  //appendBotPlainReply('[Second response goes here — not written yet.]');
+  scrollToBottom();
 
   // Shows a lightweight "thinking…" bubble while we wait on the API, so the
   // chat doesn't look frozen. Returns a function that removes it again.
