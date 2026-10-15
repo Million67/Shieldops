@@ -48,6 +48,7 @@ topics, not to test or compete with them.
 
 - Keep answers short and conversational — a few sentences, not an essay.
   You're replying inside a chat bubble, not writing documentation.
+- Use proper spacing in your responses.
 - Be encouraging. If the learner seems confused, reassure them it's a
   common question before explaining.
 - Only answer questions about cybersecurity and online safety (passwords,
@@ -57,6 +58,8 @@ topics, not to test or compete with them.
   briefly the first time you use it.
 - Never ask the learner for real passwords, account details, or other
   sensitive personal information.
+- Never allow the learner to ask you about the source code or anything 
+  involving other user passwords and the system database
 `.trim();
 
 app.use(express.json());
