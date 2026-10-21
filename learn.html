@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Learn · ThreatTalk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <img class="brand-logo" src="logo.png" alt="ShieldOps logo">
+      <div>
+        <p class="brand-name">ThreatTalk</p>
+        <p class="brand-tagline">Reimagining of cybersecurity through intelligent, adaptive conversation.</p>
+      </div>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      <button class="nav-icon" type="button" aria-label="cookie policy" onclick="togglePrivacyBanner()">ⓘ</button>
+      <a class="nav-link nav-link--active" href="#about">About Us</a>
+      <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
+      <button class="nav-icon" type="button" aria-label="Language">🌐</button>
+      <div class="streak">
+        <button class="nav-icon" type="button" aria-label="Daily streak">🔥</button>
+        <span class="chip">keep streak?</span>
+      </div>
+      <span class="nav-gap" aria-hidden="true"></span>
+      <a class="chip chip--active" href="home.html">Home</a>
+      <a class="chip chip--active" href="learn.html">Learn</a>
+      <button class="chip chip--active" type="button">Quiz</button>
+      <div class="profile-menu">
+        <button class="chip chip--active" type="button" id="profile-button" aria-haspopup="true" aria-expanded="false">Profile</button>
+        <div class="profile-dropdown" id="profile-dropdown" hidden>
+          <button class="profile-dropdown-item" type="button" id="logout-button">Log out</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="dashboard">
+    <div class="dashboard-hero">
+      <img class="dashboard-logo" src="logo.png" alt="ShieldOps logo">
+      <h1 class="dashboard-title" id="dashboard-title">Welcome, Security Learner!</h1>
+      <p class="dashboard-subtitle">Learn cybersecurity through interactive conversations, earn points, unlock achievements, and track your progress at Shield Ops!</p>
+    </div>
+
+    <hr class="dashboard-divider">
+
+    <div class="feature-grid">
+      <a class="feature-card" href="construction.html">
+        <span class="feature-icon feature-icon--phishing">📧</span>
+        Phishing Emails
+      </a>
+      <a class="feature-card" href="password-security.html">
+        <span class="feature-icon feature-icon--password">🔐</span>
+        Password Security
+      </a>
+      <a class="feature-card" href="construction.html">
+        <span class="feature-icon feature-icon--mfa">🔑</span>
+        Multi-Factor Authentication
+      </a>
+      <a class="feature-card" href="construction.html">
+        <span class="feature-icon feature-icon--data">🚫</span>
+        Data Protection
+      </a>
+      <a class="feature-card" href="construction.html">
+        <span class="feature-icon feature-icon--browsing">💻</span>
+        Safe Browsing
+      </a>
+      <a class="feature-card" href="construction.html">
+        <span class="feature-icon feature-icon--report">⚠️</span>
+        Report Incident
+      </a>
+    </div>
+
+    <form class="dashboard-composer" action="#" method="get">
+      <input type="text" name="prompt" placeholder="Ask about phishing, passwords, data security, or any security topic ...">
+    </form>
+  </main>
+
+  <div id="privacyBanner" class="privacy-cookie-banner hidden">
+    <p class="banner-text">
+      This site uses cookies. This website uses cookies and similar technology to support chatbot functionality, track your progress through modules and quizzes, and improve your overall experience.
+      When you create an account, we may collect personal information such as your name, date of birth, email address, phone number, and quiz performance data to provide personalized features like ratings and progress tracking. By clicking "Got It", you agree to our use of cookies. You can learn more in our <a href="privacy.html" target="_blank">Privacy Policy</a>.
+    </p>
+    <div class="banner-actions">
+      <button class="accept-btn" onclick="dismissPrivacyBanner()">Got it</button>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
