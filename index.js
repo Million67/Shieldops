@@ -88,7 +88,7 @@ function requireAuth(req, res, next) {
 // Gate the signed-in pages behind a session check. These routes are
 // declared before express.static below, so they take priority over the
 // static files of the same name for GET requests.
-['home.html', 'learn.html'].forEach((page) => {
+['home.html', 'learn.html', 'profile.html'].forEach((page) => {
   app.get('/' + page, requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, page));
   });
