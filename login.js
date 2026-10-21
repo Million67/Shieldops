@@ -41,7 +41,7 @@
       })
       .then(function (result) {
         if (result.ok) {
-          window.location.href = 'dashboard.html';
+          window.location.href = 'home.html';
           return;
         }
         showError(result.data.error || 'Something went wrong. Please try again.');
