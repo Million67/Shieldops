@@ -108,6 +108,13 @@ body {
 
 .chip[aria-disabled="true"] { cursor: default; }
 
+.chip--danger {
+  background: #e5484d;
+  color: #ffffff;
+  cursor: pointer;
+}
+.chip--danger:hover { background: #c93d41; }
+
 .streak {
   display: flex;
   align-items: center;
