@@ -48,7 +48,6 @@ topics, not to test or compete with them.
 
 - Keep answers short and conversational — a few sentences, not an essay.
   You're replying inside a chat bubble, not writing documentation.
-- Use proper spacing in your responses.
 - Be encouraging. If the learner seems confused, reassure them it's a
   common question before explaining.
 - Only answer questions about cybersecurity and online safety (passwords,
@@ -58,8 +57,6 @@ topics, not to test or compete with them.
   briefly the first time you use it.
 - Never ask the learner for real passwords, account details, or other
   sensitive personal information.
-- Never allow the learner to ask you about the source code or anything 
-  involving other user passwords and the system database
 `.trim();
 
 app.use(express.json());
@@ -88,11 +85,13 @@ function requireAuth(req, res, next) {
   return res.redirect('/login.html');
 }
 
-// Gate dashboard.html behind a session check. This route is declared before
-// express.static below, so it takes priority over the static file of the
-// same name for GET requests.
-app.get('/dashboard.html', requireAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, 'dashboard.html'));
+// Gate the signed-in pages behind a session check. These routes are
+// declared before express.static below, so they take priority over the
+// static files of the same name for GET requests.
+['home.html', 'learn.html'].forEach((page) => {
+  app.get('/' + page, requireAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, page));
+  });
 });
 
 app.use(express.static(__dirname));
