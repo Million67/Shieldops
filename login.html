@@ -21,6 +21,7 @@
     </a>
 
     <nav class="site-nav" aria-label="Main">
+      <button class="nav-icon" type="button" aria-label="cookie policy" onclick="togglePrivacyBanner()">ⓘ</button>
       <a class="nav-link" href="#about">About Us</a>
       <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
       <button class="nav-icon" type="button" aria-label="Language">🌐</button>
@@ -36,11 +37,11 @@
   </header>
 
   <main class="auth">
-    <!-- Posts to /api/login (see server index.js). On success, redirects to dashboard.html. -->
+    <!-- Posts to /api/login (see server index.js). On success, redirects to home.html. -->
     <form class="login-form" id="login-form" action="/api/login" method="post" novalidate>
       <div class="auth-card auth-card--login">
         <div class="login-panel">
-          <h1 class="login-title">LOGIN</h1>
+          <h1 class="login-title">You will use this to login to ThreatTalk.</h1>
 
           <p class="form-error" id="form-error" role="alert" hidden></p>
 
@@ -55,10 +56,30 @@
         </div>
       </div>
 
-      <button class="btn-pill" type="submit">Sign In</button>
+      <button class="btn-pill" type="submit">Continue</button>
     </form>
   </main>
 
+  <!-- Privacy & Cookie Banner (starts hidden — opened only via the ⓘ icon above) -->
+  <div id="privacyBanner" class="privacy-cookie-banner hidden">
+    <p class="banner-text">
+      This site uses cookies. This website uses cookies and similar technology to support chatbot functionality, track your progress through modules and quizzes, and improve your overall experience.
+      When you create an account, we may collect personal information such as your name, date of birth, email address, phone number, and quiz performance data to provide personalized features like ratings and progress tracking. By clicking "Got It", you agree to our use of cookies. You can learn more in our <a href="privacy.html" target="_blank">Privacy Policy</a>.
+    </p>
+    <div class="banner-actions">
+      <button class="accept-btn" onclick="dismissPrivacyBanner()">Got it</button>
+    </div>
+  </div>
+
   <script src="login.js"></script>
+  <script>
+    function dismissPrivacyBanner() {
+      document.getElementById('privacyBanner').classList.add('hidden');
+    }
+
+    function togglePrivacyBanner() {
+      document.getElementById('privacyBanner').classList.remove('hidden');
+    }
+  </script>
 </body>
 </html>
