@@ -1,12 +1,9 @@
 (function () {
-  var profileButton = document.getElementById('profile-button');
-  var dropdown = document.getElementById('profile-dropdown');
   var logoutButton = document.getElementById('logout-button');
   var titleEl = document.getElementById('dashboard-title');
 
   // Show the signed-in user's name once we know it (only on pages that have
-  // a #dashboard-title element — e.g. not under-construction.html, which
-  // reuses this file just for the Profile dropdown and logout).
+  // a #dashboard-title element).
   if (titleEl) {
     fetch('/api/me')
       .then(function (response) { return response.json(); })
@@ -20,54 +17,24 @@
       });
   }
 
-  function openDropdown() {
-    dropdown.hidden = false;
-    profileButton.setAttribute('aria-expanded', 'true');
+  // Profile is now a standalone page link in the nav, with Logout sitting
+  // next to it as its own button — no more dropdown to open/close.
+  if (logoutButton) {
+    logoutButton.addEventListener('click', function () {
+      logoutButton.disabled = true;
+      logoutButton.textContent = 'Logging out…';
+
+      fetch('/api/logout', { method: 'POST' })
+        .then(function () {
+          window.location.href = 'login.html';
+        })
+        .catch(function () {
+          // Even if the request fails, there's nothing useful to do client-side
+          // but try sending them to login anyway.
+          window.location.href = 'login.html';
+        });
+    });
   }
-
-  function closeDropdown() {
-    dropdown.hidden = true;
-    profileButton.setAttribute('aria-expanded', 'false');
-  }
-
-  profileButton.addEventListener('click', function (event) {
-    event.stopPropagation();
-    if (dropdown.hidden) {
-      openDropdown();
-    } else {
-      closeDropdown();
-    }
-  });
-
-  // Close when clicking anywhere else on the page
-  document.addEventListener('click', function (event) {
-    if (!dropdown.hidden && !dropdown.contains(event.target) && event.target !== profileButton) {
-      closeDropdown();
-    }
-  });
-
-  // Close on Escape
-  document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && !dropdown.hidden) {
-      closeDropdown();
-      profileButton.focus();
-    }
-  });
-
-  logoutButton.addEventListener('click', function () {
-    logoutButton.disabled = true;
-    logoutButton.textContent = 'Logging out…';
-
-    fetch('/api/logout', { method: 'POST' })
-      .then(function () {
-        window.location.href = 'login.html';
-      })
-      .catch(function () {
-        // Even if the request fails, there's nothing useful to do client-side
-        // but try sending them to login anyway.
-        window.location.href = 'login.html';
-      });
-  });
 })();
 
 // Privacy / cookie banner — opened only via the ⓘ icon, not shown on load.
