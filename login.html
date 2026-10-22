@@ -36,27 +36,44 @@
     </nav>
   </header>
 
-  <main class="auth">
+  <main class="auth auth--login">
     <!-- Posts to /api/login (see server index.js). On success, redirects to home.html. -->
     <form class="login-form" id="login-form" action="/api/login" method="post" novalidate>
-      <div class="auth-card auth-card--login">
-        <div class="login-panel">
-          <h1 class="login-title">You will use this to login to ThreatTalk.</h1>
+      <div class="login-card">
+        <h1 class="login-title">Login</h1>
 
-          <p class="form-error" id="form-error" role="alert" hidden></p>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
 
-          <div class="login-fields">
-            <div class="login-field">
-              <input type="email" name="email" placeholder="Email address" aria-label="Email address" autocomplete="email" required>
-            </div>
-            <div class="login-field">
-              <input type="password" name="password" placeholder="Password" aria-label="Password" autocomplete="current-password" required>
+        <div class="login-fields">
+          <div class="login-field">
+            <label class="login-label" for="login-email">Email</label>
+            <input class="login-input" id="login-email" type="email" name="email" placeholder="username@gmail.com" aria-label="Email address" autocomplete="email" required>
+          </div>
+          <div class="login-field">
+            <label class="login-label" for="login-password">Password</label>
+            <div class="login-password-wrap">
+              <input class="login-input" id="login-password" type="password" name="password" placeholder="Password" aria-label="Password" autocomplete="current-password" required>
+              <button class="login-eye-btn" type="button" id="login-eye-btn" aria-label="Show password" aria-pressed="false">
+                <svg class="login-eye-icon login-eye-icon--show" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M1 12c1.9-4 6-7 11-7s9.1 3 11 7c-1.9 4-6 7-11 7s-9.1-3-11-7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+                <svg class="login-eye-icon login-eye-icon--hide" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                  <path d="M3 3l18 18M10.6 10.7a2.8 2.8 0 003.9 3.9M9.4 5.3A10.4 10.4 0 0112 5c5 0 9.1 3 11 7-0.6 1.2-1.5 2.5-2.6 3.6M6.4 6.5C4.3 7.9 2.7 9.8 1 12c1.9 4 6 7 11 7 1.3 0 2.6-0.2 3.7-0.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
-      </div>
 
-      <button class="btn-pill" type="submit">Continue</button>
+        <div class="login-forgot-row">
+          <a class="login-forgot" href="#" onclick="return false;">Forgot Password?</a>
+        </div>
+
+        <button class="btn-pill" type="submit">Sign in</button>
+
+        <p class="login-register">Don't have an account yet? <a href="signup.html">Register for free</a></p>
+      </div>
     </form>
   </main>
 
