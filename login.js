@@ -70,7 +70,7 @@
     passwordInput.type = isHidden ? 'text' : 'password';
     eyeBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
     eyeBtn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
-    if (showIcon) showIcon.style.display = isHidden ? 'none' : '';
-    if (hideIcon) hideIcon.style.display = isHidden ? '' : 'none';
+    if (showIcon) showIcon.style.display = isHidden ? 'none' : 'inline';
+    if (hideIcon) hideIcon.style.display = isHidden ? 'inline' : 'none';
   });
 })();
