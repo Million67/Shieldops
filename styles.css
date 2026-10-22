@@ -1050,55 +1050,6 @@ a:focus-visible, button:focus-visible {
   background: #e3f6ea;
 }
 
-.chat-checklist {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 2px 0;
-}
-
-.chat-checklist-item {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 13px;
-  border-radius: 999px;
-  background: var(--chip-bg);
-  color: var(--faint);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.chat-checklist-item--done {
-  background: #e3f6ea;
-  color: #176b3a;
-}
-
-.chat-checklist-dot {
-  flex: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1.5px solid currentColor;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.chat-checklist-item--done .chat-checklist-dot {
-  border-color: #176b3a;
-  background: #176b3a;
-}
-
-.chat-checklist-complete {
-  width: 100%;
-  margin: 4px 0 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: #176b3a;
-}
-
 .chat-thread {
   flex: 1;
   overflow-y: auto;
