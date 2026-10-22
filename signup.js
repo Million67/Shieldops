@@ -14,7 +14,7 @@
   // Submit to the signup API and hand off to the login page on success
   var form = document.getElementById('signup-form');
   var errorBox = document.getElementById('form-error');
-  var submitBtn = form.querySelector('.save-btn');
+  var submitBtn = form.querySelector('.btn-pill');
 
   function showError(message) {
     errorBox.textContent = message;
@@ -44,7 +44,7 @@
     };
 
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Creating account…';
+    submitBtn.textContent = 'Signing up…';
 
     fetch('/api/signup', {
       method: 'POST',
@@ -63,12 +63,36 @@
         }
         showError(result.data.error || 'Something went wrong. Please try again.');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Create Account';
+        submitBtn.textContent = 'Sign Up';
       })
       .catch(function () {
         showError('Could not reach the server. Please check your connection and try again.');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Create Account';
+        submitBtn.textContent = 'Sign Up';
       });
   });
+})();
+
+// Password show/hide toggles (Password + Confirm Password)
+(function () {
+  function wireToggle(inputId, btnId) {
+    var input = document.getElementById(inputId);
+    var btn = document.getElementById(btnId);
+    if (!input || !btn) return;
+
+    var showIcon = btn.querySelector('.login-eye-icon--show');
+    var hideIcon = btn.querySelector('.login-eye-icon--hide');
+
+    btn.addEventListener('click', function () {
+      var isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+      if (showIcon) showIcon.hidden = isHidden;
+      if (hideIcon) hideIcon.hidden = !isHidden;
+    });
+  }
+
+  wireToggle('password', 'signup-password-eye-btn');
+  wireToggle('confirm-password', 'signup-confirm-eye-btn');
 })();
