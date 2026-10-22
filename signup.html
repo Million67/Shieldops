@@ -36,39 +36,66 @@
     </nav>
   </header>
 
-  <main class="auth">
+  <main class="auth auth--login">
     <!-- Posts to /api/signup (see server index.js). On success, redirects to login.html. -->
-    <form class="signup-form" id="signup-form" action="/api/signup" method="post" novalidate>
-      <div class="auth-card auth-card--signup">
-        <div class="signup-panel">
+    <form class="login-form" id="signup-form" action="/api/signup" method="post" novalidate>
+      <div class="login-card">
+        <h1 class="login-title">Create Account</h1>
 
-          <p class="form-error" id="form-error" role="alert" hidden></p>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
 
-          <div class="form-row">
-            <input type="text" name="firstName" placeholder="First Name" aria-label="First name" autocomplete="given-name" required>
+        <div class="login-fields">
+          <div class="login-field">
+            <label class="login-label" for="signup-first-name">First Name</label>
+            <input class="login-input" id="signup-first-name" type="text" name="firstName" placeholder="First name" aria-label="First name" autocomplete="given-name" required>
           </div>
 
-          <div class="form-row">
-            <input type="text" name="lastName" placeholder="Last Name" aria-label="Last name" autocomplete="family-name" required>
+          <div class="login-field">
+            <label class="login-label" for="signup-last-name">Last Name</label>
+            <input class="login-input" id="signup-last-name" type="text" name="lastName" placeholder="Last name" aria-label="Last name" autocomplete="family-name" required>
           </div>
 
-          <div class="form-row">
-            <input type="email" name="email" placeholder="Email Address" aria-label="Email address" autocomplete="email" required>
+          <div class="login-field">
+            <label class="login-label" for="signup-email">Email</label>
+            <input class="login-input" id="signup-email" type="email" name="email" placeholder="username@gmail.com" aria-label="Email address" autocomplete="email" required>
           </div>
 
-          <div class="form-row">
-            <input type="password" id="password" name="password" placeholder="Password" aria-label="Password" autocomplete="new-password" minlength="8" required>
+          <div class="login-field">
+            <label class="login-label" for="password">Password</label>
+            <div class="login-password-wrap">
+              <input class="login-input" id="password" type="password" name="password" placeholder="Password" aria-label="Password" autocomplete="new-password" minlength="8" required>
+              <button class="login-eye-btn" type="button" id="signup-password-eye-btn" aria-label="Show password" aria-pressed="false">
+                <svg class="login-eye-icon login-eye-icon--show" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M1 12c1.9-4 6-7 11-7s9.1 3 11 7c-1.9 4-6 7-11 7s-9.1-3-11-7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+                <svg class="login-eye-icon login-eye-icon--hide" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                  <path d="M3 3l18 18M10.6 10.7a2.8 2.8 0 003.9 3.9M9.4 5.3A10.4 10.4 0 0112 5c5 0 9.1 3 11 7-0.6 1.2-1.5 2.5-2.6 3.6M6.4 6.5C4.3 7.9 2.7 9.8 1 12c1.9 4 6 7 11 7 1.3 0 2.6-0.2 3.7-0.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
-          <div class="form-row">
-            <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm Password" aria-label="Confirm password" autocomplete="new-password" minlength="8" required>
+          <div class="login-field">
+            <label class="login-label" for="confirm-password">Confirm Password</label>
+            <div class="login-password-wrap">
+              <input class="login-input" id="confirm-password" type="password" name="confirmPassword" placeholder="Confirm password" aria-label="Confirm password" autocomplete="new-password" minlength="8" required>
+              <button class="login-eye-btn" type="button" id="signup-confirm-eye-btn" aria-label="Show password" aria-pressed="false">
+                <svg class="login-eye-icon login-eye-icon--show" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M1 12c1.9-4 6-7 11-7s9.1 3 11 7c-1.9 4-6 7-11 7s-9.1-3-11-7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+                <svg class="login-eye-icon login-eye-icon--hide" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                  <path d="M3 3l18 18M10.6 10.7a2.8 2.8 0 003.9 3.9M9.4 5.3A10.4 10.4 0 0112 5c5 0 9.1 3 11 7-0.6 1.2-1.5 2.5-2.6 3.6M6.4 6.5C4.3 7.9 2.7 9.8 1 12c1.9 4 6 7 11 7 1.3 0 2.6-0.2 3.7-0.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
           </div>
-
-          <div class="form-row form-row--save">
-            <button class="save-btn" type="submit">Create Account</button>
-          </div>
-
         </div>
+
+        <button class="btn-pill" type="submit">Sign Up</button>
+
+        <p class="login-register">Already have an account? <a href="login.html">Log In</a></p>
       </div>
     </form>
   </main>
