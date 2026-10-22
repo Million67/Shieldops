@@ -408,8 +408,10 @@ a:focus-visible, button:focus-visible {
    ========================================================== */
 
 .dashboard {
-  display: block;
-  max-width: 985px;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  min-height: 100dvh;
   margin: 0 auto;
   padding: 40px 16px 28px;
 }
@@ -429,14 +431,14 @@ a:focus-visible, button:focus-visible {
 
 .dashboard-title {
   margin: 14px 0 0;
-  font-size: 19px;
+  font-size: 30px;
   font-weight: 700;
 }
 
 .dashboard-subtitle {
   margin: 12px 0 0;
-  max-width: 780px;
-  font-size: 12.5px;
+  max-width: 880px;
+  font-size: 17px;
   line-height: 1.5;
   color: #555;
 }
@@ -450,21 +452,21 @@ a:focus-visible, button:focus-visible {
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 18px;
 }
 
 .feature-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 52px;
-  padding: 0 16px;
+  gap: 18px;
+  min-height: 96px;
+  padding: 0 26px;
   background: #fafafa;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 14px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   font: inherit;
-  font-size: 12.5px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--text);
   text-align: left;
@@ -482,11 +484,11 @@ a:focus-visible, button:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 48px;
+  height: 48px;
   flex: none;
-  font-size: 16px;
-  border-radius: 6px;
+  font-size: 28px;
+  border-radius: 10px;
 }
 
 .feature-icon--phishing { background: #3b82f6; }
@@ -541,18 +543,19 @@ a:focus-visible, button:focus-visible {
 }
 
 .dashboard-composer {
-  margin-top: 16px;
+  margin-top: auto;
+  padding-top: 24px;
 }
 
 .dashboard-composer input {
   width: 100%;
-  height: 46px;
-  padding: 0 18px;
+  height: 58px;
+  padding: 0 22px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 12px;
   background: #fff;
   font: inherit;
-  font-size: 12.5px;
+  font-size: 16px;
   color: var(--text);
   outline: none;
 }
