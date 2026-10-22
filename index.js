@@ -5,6 +5,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const { Pool } = require('pg');
+const LESSON_CHECKLISTS = require('./lesson-checklists');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -198,25 +199,111 @@ app.get('/api/me', (req, res) => {
   return res.status(200).json({ user: req.session.user });
 });
 
-// The tutor chatbot. Takes a single question (optionally with which topic
-// it was asked from) and returns one reply from Groq, using the shared
-// persona above. No conversation history is sent yet — each question is
-// answered on its own — which is enough for the current chat UI, but is
-// the first thing to revisit once multi-turn follow-ups matter.
+// Lets the lesson-chat page fetch a topic's concept checklist — the same
+// data the tutor uses below — so the on-page progress panel and the AI's
+// instructions can never drift out of sync with each other.
+app.get('/api/checklist/:slug', (req, res) => {
+  const topic = LESSON_CHECKLISTS[req.params.slug];
+  if (!topic) {
+    return res.status(404).json({ error: 'Unknown topic.' });
+  }
+  return res.status(200).json({
+    title: topic.title,
+    concepts: topic.concepts.map((c) => ({ id: c.id, label: c.label })),
+  });
+});
+
+// Builds the extra system message that turns the tutor into a guide for a
+// specific lesson's checklist, and tells it how to self-report progress.
+// Returns null when the topic isn't recognized (free-form question, no
+// checklist to track).
+function buildGuideInstruction(topicSlug, topicTitle) {
+  const topic = LESSON_CHECKLISTS[topicSlug];
+  if (!topic) return null;
+
+  const checklistBlock = topic.concepts.map((c) => `- ${c.id}: ${c.label}`).join('\n');
+
+  return `
+You are guiding the learner through the "${topic.title}" lesson. Over the
+course of this conversation, make sure the learner ends up understanding
+each of the concepts below — weave them in naturally as the conversation
+goes, don't just read them off as a list. The learner already saw a short
+written overview of this topic before the conversation started, so you
+don't need to re-explain everything up front; build on what they ask, and
+once things settle, gently steer back toward whichever concepts below
+haven't come up yet.
+
+Concepts for this lesson:
+${checklistBlock}
+
+At the very end of your reply — after everything the learner should see —
+add one hidden tracking line in exactly this format:
+<<COVERAGE: id1, id2>>
+List every concept id above that has been adequately covered by the
+conversation so far, counting earlier turns too, not just this message.
+Only include an id once the learner has actually been walked through it,
+not just had it mentioned in passing. If nothing qualifies yet, write
+<<COVERAGE:>>. This line is stripped out before the learner sees your
+reply, so never mention it or refer to it in the visible part of your
+answer.
+`.trim();
+}
+
+// Pulls the <<COVERAGE: ...>> marker (see buildGuideInstruction above) off
+// the end of a raw model reply, returning the cleaned, learner-facing text
+// plus the list of concept ids it reported. If the model forgot the
+// marker, the full reply is kept as-is and coverage comes back empty.
+function extractCoverage(rawReply) {
+  const match = rawReply.match(/<<COVERAGE:\s*([^>]*)>>\s*$/i);
+  if (!match) {
+    return { reply: rawReply.trim(), coverage: [] };
+  }
+  const coverage = match[1]
+    .split(',')
+    .map((id) => id.trim())
+    .filter(Boolean);
+  const reply = rawReply.slice(0, match.index).trim();
+  return { reply, coverage };
+}
+
+// The tutor chatbot. Takes the learner's message, optionally which lesson
+// topic it was asked from, and the conversation so far (so the AI can
+// guide a multi-turn lesson instead of answering each question cold).
+// When the topic matches a checklist in lesson-checklists.js, the tutor
+// also self-reports which concepts it believes have been covered.
 app.post('/api/chat', async (req, res) => {
   try {
     if (!process.env.GROQ_API_KEY) {
       return res.status(500).json({ error: 'The tutor is not configured yet.' });
     }
 
-    const { message, topicTitle } = req.body || {};
+    const { message, topicTitle, topicSlug, history } = req.body || {};
     if (!message || typeof message !== 'string' || !message.trim()) {
       return res.status(400).json({ error: 'Ask me something first!' });
     }
 
-    const userMessage = topicTitle
+    const guideInstruction = topicSlug ? buildGuideInstruction(topicSlug, topicTitle) : null;
+
+    const userMessage = !guideInstruction && topicTitle
       ? `[Learner is on the "${topicTitle}" lesson]\n${message.trim()}`
       : message.trim();
+
+    // The client keeps the running conversation and resends it each turn —
+    // nothing is stored server-side. Trim it defensively in case something
+    // sends more than expected.
+    const historyMessages = Array.isArray(history)
+      ? history
+          .filter((turn) => turn && (turn.role === 'user' || turn.role === 'assistant') && typeof turn.content === 'string')
+          .slice(-20)
+          .map((turn) => ({ role: turn.role, content: turn.content }))
+      : [];
+
+    const messages = [{ role: 'system', content: TUTOR_SYSTEM_INSTRUCTION }];
+    if (guideInstruction) {
+      messages.push({ role: 'system', content: guideInstruction });
+    }
+    messages.push(...historyMessages);
+    messages.push({ role: 'user', content: userMessage });
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -226,10 +313,7 @@ app.post('/api/chat', async (req, res) => {
       },
       body: JSON.stringify({
         model: 'openai/gpt-oss-20b',
-        messages: [
-          { role: 'system', content: TUTOR_SYSTEM_INSTRUCTION },
-          { role: 'user', content: userMessage },
-        ],
+        messages,
       }),
     });
 
@@ -240,17 +324,21 @@ app.post('/api/chat', async (req, res) => {
     }
 
     const data = await response.json();
-    const reply = data &&
+    const rawReply = data &&
       data.choices &&
       data.choices[0] &&
       data.choices[0].message &&
       data.choices[0].message.content;
 
-    if (!reply) {
+    if (!rawReply) {
       return res.status(502).json({ error: "Didn't get a response back — try asking again." });
     }
 
-    return res.status(200).json({ reply: reply.trim() });
+    const { reply, coverage } = guideInstruction
+      ? extractCoverage(rawReply)
+      : { reply: rawReply.trim(), coverage: [] };
+
+    return res.status(200).json({ reply, coverage });
   } catch (err) {
     console.error('Chat error:', err);
     return res.status(500).json({ error: 'Something went wrong. Please try again.' });
