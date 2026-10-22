@@ -316,6 +316,8 @@ a:focus-visible, button:focus-visible {
 }
 .login-eye-btn:hover { color: var(--text); }
 
+.login-eye-icon--hide { display: none; }
+
 .login-forgot-row {
   display: flex;
   justify-content: flex-end;
