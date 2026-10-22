@@ -27,7 +27,7 @@
     };
 
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Logging in…';
+    submitBtn.textContent = 'Signing in…';
 
     fetch('/api/login', {
       method: 'POST',
@@ -46,12 +46,31 @@
         }
         showError(result.data.error || 'Something went wrong. Please try again.');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Continue';
+        submitBtn.textContent = 'Sign in';
       })
       .catch(function () {
         showError('Could not reach the server. Please check your connection and try again.');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Continue';
+        submitBtn.textContent = 'Sign in';
       });
+  });
+})();
+
+// Password show/hide toggle
+(function () {
+  var passwordInput = document.getElementById('login-password');
+  var eyeBtn = document.getElementById('login-eye-btn');
+  if (!passwordInput || !eyeBtn) return;
+
+  var showIcon = eyeBtn.querySelector('.login-eye-icon--show');
+  var hideIcon = eyeBtn.querySelector('.login-eye-icon--hide');
+
+  eyeBtn.addEventListener('click', function () {
+    var isHidden = passwordInput.type === 'password';
+    passwordInput.type = isHidden ? 'text' : 'password';
+    eyeBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    eyeBtn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+    if (showIcon) showIcon.hidden = isHidden;
+    if (hideIcon) hideIcon.hidden = !isHidden;
   });
 })();
