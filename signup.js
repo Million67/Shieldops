@@ -88,8 +88,8 @@
       input.type = isHidden ? 'text' : 'password';
       btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
       btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
-      if (showIcon) showIcon.style.display = isHidden ? 'none' : '';
-      if (hideIcon) hideIcon.style.display = isHidden ? '' : 'none';
+      if (showIcon) showIcon.style.display = isHidden ? 'none' : 'inline';
+      if (hideIcon) hideIcon.style.display = isHidden ? 'inline' : 'none';
     });
   }
 
