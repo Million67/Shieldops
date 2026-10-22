@@ -1,13 +1,15 @@
 // Password Security — topic chat page.
 //
-// There's no AI wired up yet, so each topic starts with one scripted
-// exchange (a stand-in for what the real tutor will eventually generate).
-// Typing in the composer still works — it just gets a canned "not live yet"
-// reply instead of a real answer. Swap `sendToAssistant` for a real
-// `/api/chat` call once that endpoint exists; nothing else here should need
-// to change.
+// After the static intro card below, the AI takes over as a guide: it's
+// told (server-side, see /api/chat in index.js) which concepts this topic's
+// checklist covers, and asked to self-report which ones it's covered after
+// every reply. This file tracks that running conversation, renders the
+// checklist panel, and persists covered concepts the same placeholder way
+// as everything else right now — localStorage, until a real `progress`
+// table exists.
 (function () {
   var STORAGE_PREFIX = 'threattalk:topic:';
+  var COVERAGE_STORAGE_PREFIX = 'threattalk:coverage:';
 
   var TOPICS = {
     'strong-passwords': {
@@ -120,10 +122,108 @@
   var composerEl = document.getElementById('chat-composer');
   var inputEl = document.getElementById('chat-input');
   var completeBtn = document.getElementById('complete-button');
+  var checklistEl = document.getElementById('chat-checklist');
 
   if (titleEl) {
     titleEl.textContent = topic.title;
   }
+
+  // ---- Checklist panel + coverage tracking ----
+  var coverageStorageKey = COVERAGE_STORAGE_PREFIX + slug;
+  var checklistConcepts = []; // [{id, label}], loaded from /api/checklist/<slug>
+  var coveredIds = loadCoveredIds();
+  var conversationHistory = []; // [{role: 'user'|'assistant', content}]
+
+  function loadCoveredIds() {
+    if (!window.localStorage) return [];
+    try {
+      var raw = localStorage.getItem(coverageStorageKey);
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveCoveredIds() {
+    if (!window.localStorage) return;
+    localStorage.setItem(coverageStorageKey, JSON.stringify(coveredIds));
+  }
+
+  function mergeCoverage(newIds) {
+    if (!Array.isArray(newIds) || !newIds.length) return;
+    var changed = false;
+    newIds.forEach(function (id) {
+      if (coveredIds.indexOf(id) === -1) {
+        coveredIds.push(id);
+        changed = true;
+      }
+    });
+    if (changed) {
+      saveCoveredIds();
+      renderChecklist();
+    }
+  }
+
+  function renderChecklist() {
+    if (!checklistEl || !checklistConcepts.length) return;
+    checklistEl.innerHTML = '';
+
+    checklistConcepts.forEach(function (concept) {
+      var done = coveredIds.indexOf(concept.id) !== -1;
+
+      var item = document.createElement('span');
+      item.className = 'chat-checklist-item' + (done ? ' chat-checklist-item--done' : '');
+
+      var dot = document.createElement('span');
+      dot.className = 'chat-checklist-dot';
+      dot.setAttribute('aria-hidden', 'true');
+      if (done) {
+        dot.innerHTML = '<svg width="8" height="8" viewBox="0 0 24 24"><path d="M4 12.5l5 5 11-11" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      }
+      item.appendChild(dot);
+
+      var label = document.createElement('span');
+      label.textContent = concept.label;
+      item.appendChild(label);
+
+      checklistEl.appendChild(item);
+    });
+
+    var allDone = checklistConcepts.every(function (concept) {
+      return coveredIds.indexOf(concept.id) !== -1;
+    });
+
+    var note = checklistEl.querySelector('.chat-checklist-complete');
+    if (allDone && !note) {
+      note = document.createElement('p');
+      note.className = 'chat-checklist-complete';
+      note.textContent = "You've covered everything in this lesson.";
+      checklistEl.appendChild(note);
+    } else if (allDone && note) {
+      checklistEl.appendChild(note);
+    }
+  }
+
+  function loadChecklist() {
+    if (!checklistEl) return;
+    fetch('/api/checklist/' + encodeURIComponent(slug))
+      .then(function (response) {
+        if (!response.ok) throw new Error('No checklist for this topic');
+        return response.json();
+      })
+      .then(function (data) {
+        checklistConcepts = (data && data.concepts) || [];
+        renderChecklist();
+      })
+      .catch(function () {
+        // No checklist defined for this topic yet — hide the panel instead
+        // of showing an empty strip.
+        checklistEl.hidden = true;
+      });
+  }
+
+  loadChecklist();
 
   function timestamp() {
     return new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
@@ -228,8 +328,6 @@
   // Seed the conversation with the bot's opening message for this topic —
   // no fake user question shown anymore, the lesson just starts talking.
   appendBotCard(topic.bot);
-  // Second bot bubble — placeholder for now, content TBD.
-  //appendBotPlainReply('[Second response goes here — not written yet.]');
   scrollToBottom();
 
   // Shows a lightweight "thinking…" bubble while we wait on the API, so the
@@ -257,15 +355,21 @@
   }
 
   // Calls the real tutor endpoint (see /api/chat in index.js). The whole
-  // system-instruction/persona setup lives server-side, so this is just a
-  // normal fetch + render.
+  // system-instruction/persona setup lives server-side; this just sends the
+  // running conversation + which topic/checklist we're on, and applies
+  // whatever coverage the tutor reports back.
   function sendToAssistant(userText) {
     var hideTyping = showTypingIndicator();
 
     fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: userText, topicTitle: topic.title }),
+      body: JSON.stringify({
+        message: userText,
+        topicTitle: topic.title,
+        topicSlug: slug,
+        history: conversationHistory,
+      }),
     })
       .then(function (response) {
         return response.json().then(function (data) {
@@ -279,6 +383,11 @@
         hideTyping();
         appendBotPlainReply(data.reply);
         scrollToBottom();
+
+        conversationHistory.push({ role: 'user', content: userText });
+        conversationHistory.push({ role: 'assistant', content: data.reply });
+
+        mergeCoverage(data.coverage);
       })
       .catch(function () {
         hideTyping();
@@ -301,6 +410,51 @@
       sendToAssistant(text);
     });
   }
+
+  // Kick the guided conversation off automatically once the checklist is
+  // known, so the AI leads instead of waiting on the learner to type first.
+  // The kickoff message itself is never shown — only the AI's reply is.
+  function startGuidedConversation() {
+    var hideTyping = showTypingIndicator();
+
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: "I'm ready — let's go through this lesson.",
+        topicTitle: topic.title,
+        topicSlug: slug,
+        history: conversationHistory,
+      }),
+    })
+      .then(function (response) {
+        return response.json().then(function (data) {
+          if (!response.ok) {
+            throw new Error((data && data.error) || 'Request failed');
+          }
+          return data;
+        });
+      })
+      .then(function (data) {
+        hideTyping();
+        appendBotPlainReply(data.reply);
+        scrollToBottom();
+
+        conversationHistory.push({ role: 'user', content: "I'm ready — let's go through this lesson." });
+        conversationHistory.push({ role: 'assistant', content: data.reply });
+
+        mergeCoverage(data.coverage);
+      })
+      .catch(function () {
+        hideTyping();
+        appendBotPlainReply(
+          "Sorry, I couldn't get started just now — try sending a message to kick things off."
+        );
+        scrollToBottom();
+      });
+  }
+
+  startGuidedConversation();
 
   // Completion state — stored locally for now (no progress table yet).
   if (completeBtn) {
