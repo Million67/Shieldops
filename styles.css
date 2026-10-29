@@ -1161,6 +1161,31 @@ a:focus-visible, button:focus-visible {
   font-weight: 600;
 }
 
+/* Rendered output of a live AI reply — see renderReplyHtml() in
+   lesson-chat.js. Keeps paragraphs/lists spaced apart instead of the
+   run-on look plain text gives inside a chat bubble. */
+.chat-bot-reply p {
+  margin: 0 0 10px;
+}
+.chat-bot-reply p:last-child {
+  margin-bottom: 0;
+}
+.chat-bot-reply ul,
+.chat-bot-reply ol {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+.chat-bot-reply ul:last-child,
+.chat-bot-reply ol:last-child {
+  margin-bottom: 0;
+}
+.chat-bot-reply li {
+  margin: 3px 0;
+}
+.chat-bot-reply strong {
+  font-weight: 700;
+}
+
 .chat-timestamp {
   position: absolute;
   bottom: 8px;
