@@ -36,7 +36,18 @@
       // too just guards against an unexpected missing field.
       var riskScore = stats.riskScore != null ? stats.riskScore : 100;
       if (scoreLabelEl) scoreLabelEl.textContent = riskScore + '/100';
-      if (scoreFillEl) scoreFillEl.style.width = riskScore + '%';
+      if (scoreFillEl) {
+        scoreFillEl.style.width = riskScore + '%';
+        // Red 0-65, yellow 66-85, green 86-100.
+        scoreFillEl.classList.remove('score-bar-fill--red', 'score-bar-fill--yellow', 'score-bar-fill--green');
+        if (riskScore <= 65) {
+          scoreFillEl.classList.add('score-bar-fill--red');
+        } else if (riskScore <= 85) {
+          scoreFillEl.classList.add('score-bar-fill--yellow');
+        } else {
+          scoreFillEl.classList.add('score-bar-fill--green');
+        }
+      }
 
       document.querySelectorAll('[data-status-for]').forEach(function (badge) {
         var slug = badge.getAttribute('data-status-for');
