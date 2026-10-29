@@ -1441,6 +1441,14 @@ a:focus-visible, button:focus-visible {
 }
 
 .quiz-complete-btn {
+  /* This is an <a>, not a <button> — the only place .btn-pill is used on a
+     link instead of a real button — so it needs its own display/decoration
+     reset here; otherwise it stays inline (ignoring .btn-pill's width/height)
+     and keeps the browser's default underline. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   margin-top: 22px;
   width: auto;
   min-width: 200px;
