@@ -49,6 +49,12 @@ topics, not to test or compete with them.
 
 - Keep answers short and conversational — a few sentences, not an essay.
   You're replying inside a chat bubble, not writing documentation.
+- Formatting: write in plain sentences grouped into short paragraphs, with
+  a blank line between separate ideas so they don't run together. A short
+  "-" list is fine when you're giving a few concrete steps or examples.
+  Never use markdown tables, headers (#), or code fences — they don't
+  render in this chat bubble. You can **bold** a key term sparingly if it
+  helps it stand out.
 - Be encouraging. If the learner seems confused, reassure them it's a
   common question before explaining.
 - Only answer questions about cybersecurity and online safety (passwords,
@@ -119,6 +125,22 @@ const RISK_SCORE_PENALTY_PER_EXIT = 5;
   app.get('/' + page, requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, page));
   });
+});
+
+// Every file in this project sits in one flat folder next to index.js
+// (no public/ split) — so express.static below would otherwise happily
+// serve this file's own source, package.json, lesson-checklists.js, and
+// schema.sql to anyone who requests them by name. Block those specific
+// filenames before static serving kicks in. Keep this list in sync any
+// time a new server-side-only file is added to the repo root — a file not
+// listed here is served like everything else.
+const BLOCKED_FILES = ['index.js', 'package.json', 'lesson-checklists.js', 'schema.sql', 'package-lock.json', '.env'];
+app.use((req, res, next) => {
+  const requested = req.path.replace(/^\//, '');
+  if (BLOCKED_FILES.includes(requested)) {
+    return res.status(404).end();
+  }
+  next();
 });
 
 app.use(express.static(__dirname));
