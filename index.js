@@ -86,10 +86,36 @@ function requireAuth(req, res, next) {
   return res.redirect('/login.html');
 }
 
+// Same login check as requireAuth, but for JSON API routes (no redirect —
+// just a 401 the client-side fetch calls can handle).
+function sessionUser(req) {
+  return req.session && req.session.user ? req.session.user : null;
+}
+
+// Every known lesson slug, pulled from the same list the lesson chat/tutor
+// already uses — one place to add a lesson, here and there both pick it up.
+const TOPIC_SLUGS = Object.keys(LESSON_CHECKLISTS);
+
+// Beta scoring rules. No product spec for these yet, so these are a
+// reasonable starting point — easy to retune once there's real signal on
+// what should earn points or move the needle on the risk score.
+const POINTS_PER_CORRECT_ANSWER = 10;
+const RISK_SCORE_PENALTY_PER_EXIT = 5;
+
 // Gate the signed-in pages behind a session check. These routes are
 // declared before express.static below, so they take priority over the
-// static files of the same name for GET requests.
-['home.html', 'learn.html', 'profile.html'].forEach((page) => {
+// static files of the same name for GET requests. password-security-topic.html
+// and quiz.html take a ?topic= query param, which doesn't affect path
+// matching here — requireAuth checks req.path, not the query string.
+[
+  'home.html',
+  'learn.html',
+  'profile.html',
+  'password-security.html',
+  'password-security-topic.html',
+  'quizzes.html',
+  'quiz.html',
+].forEach((page) => {
   app.get('/' + page, requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, page));
   });
@@ -211,6 +237,149 @@ app.get('/api/checklist/:slug', (req, res) => {
     title: topic.title,
     concepts: topic.concepts.map((c) => ({ id: c.id, label: c.label })),
   });
+});
+
+// The one place every page reads progress from: which lessons are
+// complete, points, quizzes/topics completed, the most recent quiz score
+// (for the hub's "Last score" line), and the Risk Awareness Score.
+//
+// Risk Awareness Score = the learner's average "percent correct" across
+// every quiz_completions row, rounded, minus 5 points per early exit
+// (quiz_exit_count), clamped to 0–100. null (shown as "—/100") until
+// they've completed a quiz at least once — an untaken quiz isn't a 0.
+app.get('/api/progress', async (req, res) => {
+  const user = sessionUser(req);
+  if (!user) {
+    return res.status(401).json({ error: 'Not logged in.' });
+  }
+
+  try {
+    const [topicRows, aggRow, lastRow, userRow] = await Promise.all([
+      pool.query(
+        'SELECT topic_slug, completed, completed_at FROM topic_progress WHERE user_id = $1',
+        [user.id]
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS quizzes_completed,
+                COALESCE(SUM(correct_count), 0)::int AS total_correct,
+                AVG(correct_count::float / NULLIF(question_count, 0) * 100) AS avg_pct
+         FROM quiz_completions WHERE user_id = $1`,
+        [user.id]
+      ),
+      pool.query(
+        `SELECT correct_count, question_count, created_at FROM quiz_completions
+         WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1`,
+        [user.id]
+      ),
+      pool.query('SELECT quiz_exit_count FROM users WHERE id = $1', [user.id]),
+    ]);
+
+    const topics = {};
+    TOPIC_SLUGS.forEach((slug) => {
+      topics[slug] = { completed: false, completedAt: null };
+    });
+    topicRows.rows.forEach((row) => {
+      topics[row.topic_slug] = { completed: row.completed, completedAt: row.completed_at };
+    });
+
+    const quizzesCompleted = aggRow.rows[0].quizzes_completed;
+    const totalCorrect = aggRow.rows[0].total_correct;
+    const avgPct = aggRow.rows[0].avg_pct !== null ? Number(aggRow.rows[0].avg_pct) : null;
+    const exitCount = userRow.rows[0] ? userRow.rows[0].quiz_exit_count : 0;
+    const topicsCompleted = Object.values(topics).filter((t) => t.completed).length;
+
+    const riskScore =
+      avgPct === null
+        ? null
+        : Math.max(0, Math.min(100, Math.round(avgPct) - exitCount * RISK_SCORE_PENALTY_PER_EXIT));
+
+    const lastScore = lastRow.rows[0]
+      ? { correct: lastRow.rows[0].correct_count, total: lastRow.rows[0].question_count }
+      : null;
+
+    return res.status(200).json({
+      topics,
+      lastScore,
+      stats: {
+        points: totalCorrect * POINTS_PER_CORRECT_ANSWER,
+        quizzesCompleted,
+        topicsCompleted,
+        totalTopics: TOPIC_SLUGS.length,
+        riskScore,
+        quizExitCount: exitCount,
+      },
+    });
+  } catch (err) {
+    console.error('Progress fetch error:', err);
+    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// Records one quiz attempt and (for beta — see the comment on
+// topic_progress in schema.sql) marks every lesson complete at once, since
+// there's only the one shared quiz right now.
+app.post('/api/quiz/submit', async (req, res) => {
+  const user = sessionUser(req);
+  if (!user) {
+    return res.status(401).json({ error: 'Not logged in.' });
+  }
+
+  const { correctCount, questionCount } = req.body || {};
+  if (
+    !Number.isInteger(correctCount) ||
+    !Number.isInteger(questionCount) ||
+    correctCount < 0 ||
+    questionCount <= 0 ||
+    correctCount > questionCount
+  ) {
+    return res.status(400).json({ error: 'Invalid quiz result.' });
+  }
+
+  try {
+    await pool.query(
+      'INSERT INTO quiz_completions (user_id, correct_count, question_count) VALUES ($1, $2, $3)',
+      [user.id, correctCount, questionCount]
+    );
+
+    // completed_at is only set the first time a lesson is completed —
+    // COALESCE keeps the original timestamp on a retake instead of
+    // re-stamping it.
+    await Promise.all(
+      TOPIC_SLUGS.map((slug) =>
+        pool.query(
+          `INSERT INTO topic_progress (user_id, topic_slug, completed, completed_at)
+           VALUES ($1, $2, true, now())
+           ON CONFLICT (user_id, topic_slug)
+           DO UPDATE SET completed = true,
+                         completed_at = COALESCE(topic_progress.completed_at, EXCLUDED.completed_at)`,
+          [user.id, slug]
+        )
+      )
+    );
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Quiz submit error:', err);
+    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
+// Called when the learner confirms "Exit quiz" on the exit-warning modal
+// before finishing. Docks the Risk Awareness Score (see GET /api/progress)
+// — never points, which only ever go up.
+app.post('/api/quiz/exit', async (req, res) => {
+  const user = sessionUser(req);
+  if (!user) {
+    return res.status(401).json({ error: 'Not logged in.' });
+  }
+
+  try {
+    await pool.query('UPDATE users SET quiz_exit_count = quiz_exit_count + 1 WHERE id = $1', [user.id]);
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Quiz exit error:', err);
+    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
 });
 
 // Builds the extra system message that turns the tutor into a guide for a
