@@ -882,6 +882,33 @@ a:focus-visible, button:focus-visible {
   line-height: 1.6;
 }
 
+.activity-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.activity-row:last-child { border-bottom: 0; }
+
+.activity-row-icon {
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.activity-row-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.activity-row-date {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #767676;
+}
+
 @media (max-width: 720px) {
   .home-sections { grid-template-columns: 1fr; }
 }
