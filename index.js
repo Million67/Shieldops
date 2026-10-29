@@ -85,6 +85,24 @@ app.use(
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Account password requirements — kept in sync with the checklist shown on
+// signup.html and validated client-side in signup.js. This server check is
+// the one that actually matters (client-side validation is just for a nicer
+// experience, not security) since a request could always skip the browser
+// entirely and hit this endpoint directly.
+const PASSWORD_MIN_LENGTH = 10;
+const PASSWORD_REQUIREMENT_MESSAGE =
+  'Password must be at least 10 characters and include an uppercase letter, a lowercase letter, a number, and a special character.';
+
+function isPasswordStrongEnough(password) {
+  if (typeof password !== 'string' || password.length < PASSWORD_MIN_LENGTH) return false;
+  if (!/[A-Z]/.test(password)) return false;
+  if (!/[a-z]/.test(password)) return false;
+  if (!/[0-9]/.test(password)) return false;
+  if (!/[^A-Za-z0-9]/.test(password)) return false; // any non-alphanumeric counts as a special character
+  return true;
+}
+
 function requireAuth(req, res, next) {
   if (req.session && req.session.user) {
     return next();
@@ -155,8 +173,8 @@ app.post('/api/signup', async (req, res) => {
     if (password !== confirmPassword) {
       return res.status(400).json({ error: 'Passwords do not match.' });
     }
-    if (password.length < 8) {
-      return res.status(400).json({ error: 'Password must be at least 8 characters.' });
+    if (!isPasswordStrongEnough(password)) {
+      return res.status(400).json({ error: PASSWORD_REQUIREMENT_MESSAGE });
     }
     if (!EMAIL_PATTERN.test(email)) {
       return res.status(400).json({ error: 'Please enter a valid email address.' });
