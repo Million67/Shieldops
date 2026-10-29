@@ -45,19 +45,17 @@
       <p>Here's where you left off, and how you're doing so far.</p>
     </div>
 
-    <!-- Day-one state: nothing started yet, so this points at Learn instead
-         of resuming a specific lesson. Once there's real progress tracking,
-         this becomes "Continue where you left off" and links straight back
-         into the in-progress topic. -->
+    <!-- Day-one markup below — home.js swaps the icon/eyebrow/title/CTA
+         once GET /api/progress comes back with any lesson completed. -->
     <section class="home-banner" aria-label="Get started">
       <div class="home-banner-left">
-        <span class="home-banner-icon" aria-hidden="true">🔐</span>
+        <span class="home-banner-icon" id="home-banner-icon" aria-hidden="true">🔐</span>
         <div>
-          <p class="home-banner-eyebrow">Get started</p>
-          <p class="home-banner-title">You haven't started a lesson yet</p>
+          <p class="home-banner-eyebrow" id="home-banner-eyebrow">Get started</p>
+          <p class="home-banner-title" id="home-banner-title">You haven't started a lesson yet</p>
         </div>
       </div>
-      <a class="home-banner-cta" href="learn.html">Start learning</a>
+      <a class="home-banner-cta" id="home-banner-cta" href="learn.html">Start learning</a>
     </section>
 
     <section class="home-sections">
@@ -80,7 +78,11 @@
 
       <div class="home-card">
         <p class="home-card-title">Recent activity</p>
-        <p class="activity-empty">Nothing here yet — once you start a lesson, your activity will show up here.</p>
+        <!-- home.js replaces this with real rows once GET /api/progress
+             comes back with at least one quiz attempt. -->
+        <div id="activity-list">
+          <p class="activity-empty">Nothing here yet — once you start a lesson, your activity will show up here.</p>
+        </div>
       </div>
 
     </section>
