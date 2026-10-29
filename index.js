@@ -239,9 +239,13 @@ app.get('/api/checklist/:slug', (req, res) => {
   });
 });
 
+// How many past quiz attempts the Home page's "Recent activity" card shows.
+const RECENT_ACTIVITY_LIMIT = 5;
+
 // The one place every page reads progress from: which lessons are
 // complete, points, quizzes/topics completed, the most recent quiz score
-// (for the hub's "Last score" line), and the Risk Awareness Score.
+// (for the hub's "Last score" line), recent activity (for Home), and the
+// Risk Awareness Score.
 //
 // Risk Awareness Score = the learner's average "percent correct" across
 // every quiz_completions row, rounded, minus 5 points per early exit
@@ -254,7 +258,7 @@ app.get('/api/progress', async (req, res) => {
   }
 
   try {
-    const [topicRows, aggRow, lastRow, userRow] = await Promise.all([
+    const [topicRows, aggRow, recentRows, userRow] = await Promise.all([
       pool.query(
         'SELECT topic_slug, completed, completed_at FROM topic_progress WHERE user_id = $1',
         [user.id]
@@ -268,8 +272,8 @@ app.get('/api/progress', async (req, res) => {
       ),
       pool.query(
         `SELECT correct_count, question_count, created_at FROM quiz_completions
-         WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1`,
-        [user.id]
+         WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2`,
+        [user.id, RECENT_ACTIVITY_LIMIT]
       ),
       pool.query('SELECT quiz_exit_count FROM users WHERE id = $1', [user.id]),
     ]);
@@ -293,13 +297,21 @@ app.get('/api/progress', async (req, res) => {
         ? null
         : Math.max(0, Math.min(100, Math.round(avgPct) - exitCount * RISK_SCORE_PENALTY_PER_EXIT));
 
-    const lastScore = lastRow.rows[0]
-      ? { correct: lastRow.rows[0].correct_count, total: lastRow.rows[0].question_count }
+    const lastScore = recentRows.rows[0]
+      ? { correct: recentRows.rows[0].correct_count, total: recentRows.rows[0].question_count }
       : null;
+
+    // Most-recent-first, for the Home page's "Recent activity" card.
+    const recentActivity = recentRows.rows.map((row) => ({
+      correct: row.correct_count,
+      total: row.question_count,
+      createdAt: row.created_at,
+    }));
 
     return res.status(200).json({
       topics,
       lastScore,
+      recentActivity,
       stats: {
         points: totalCorrect * POINTS_PER_CORRECT_ANSWER,
         quizzesCompleted,
