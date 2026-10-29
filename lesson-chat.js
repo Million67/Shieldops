@@ -314,14 +314,71 @@
     threadEl.appendChild(row);
   }
 
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // The AI's replies come back as plain text with markdown-ish formatting
+  // (the system prompt asks for blank-line paragraphs, "-" lists, and
+  // occasional **bold**). Rendered with plain textContent, none of that
+  // survives — line breaks collapse under normal CSS white-space and the
+  // markdown punctuation shows up literally, so the whole reply reads as
+  // one run-on sentence. This turns that text into real <p>/<ul>/<strong>
+  // markup instead, HTML-escaping first so nothing in the reply can inject
+  // markup of its own.
+  function renderReplyHtml(text) {
+    var escaped = escapeHtml(text || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    var blocks = escaped.split(/\n\s*\n/);
+
+    return blocks
+      .map(function (block) {
+        var lines = block.split('\n').map(function (line) { return line.trim(); }).filter(Boolean);
+        if (!lines.length) return '';
+
+        var isBulleted = lines.every(function (line) { return /^[-*]\s+/.test(line); });
+        var isNumbered = lines.every(function (line) { return /^\d+[.)]\s+/.test(line); });
+
+        if (isBulleted) {
+          return '<ul>' + lines.map(function (line) {
+            return '<li>' + line.replace(/^[-*]\s+/, '') + '</li>';
+          }).join('') + '</ul>';
+        }
+        if (isNumbered) {
+          return '<ol>' + lines.map(function (line) {
+            return '<li>' + line.replace(/^\d+[.)]\s+/, '') + '</li>';
+          }).join('') + '</ol>';
+        }
+        return '<p>' + lines.join('<br>') + '</p>';
+      })
+      .join('');
+  }
+
   function appendBotPlainReply(text) {
-    appendBotCard({ heading: '', sections: [], closing: text });
-    // A plain reply has no heading — hide the empty heading line.
-    var lastBubble = threadEl.querySelector('.chat-row--bot:last-child .chat-bubble--bot');
-    if (lastBubble) {
-      var heading = lastBubble.querySelector('.chat-bot-heading');
-      if (heading) heading.remove();
-    }
+    var row = document.createElement('div');
+    row.className = 'chat-row chat-row--bot';
+
+    var avatar = document.createElement('div');
+    avatar.className = 'chat-avatar';
+    avatar.setAttribute('aria-hidden', 'true');
+
+    var card = document.createElement('div');
+    card.className = 'chat-bubble chat-bubble--bot';
+
+    var reply = document.createElement('div');
+    reply.className = 'chat-bot-reply';
+    reply.innerHTML = renderReplyHtml(text);
+    card.appendChild(reply);
+
+    var time = document.createElement('span');
+    time.className = 'chat-timestamp';
+    time.textContent = timestamp();
+    card.appendChild(time);
+
+    row.appendChild(avatar);
+    row.appendChild(card);
+    threadEl.appendChild(row);
   }
 
   function scrollToBottom() {
