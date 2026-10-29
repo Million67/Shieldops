@@ -1,6 +1,38 @@
 (function () {
   var password = document.getElementById('password');
   var confirmPassword = document.getElementById('confirm-password');
+  var requirementsList = document.getElementById('password-requirements');
+
+  // Mirrors isPasswordStrongEnough() in index.js. This copy is just for a
+  // responsive UI (the live checklist below + blocking submit early) — the
+  // server runs its own check regardless, since a request could skip this
+  // page entirely.
+  var PASSWORD_RULES = [
+    { rule: 'length', test: function (v) { return v.length >= 10; } },
+    { rule: 'upper', test: function (v) { return /[A-Z]/.test(v); } },
+    { rule: 'lower', test: function (v) { return /[a-z]/.test(v); } },
+    { rule: 'number', test: function (v) { return /[0-9]/.test(v); } },
+    { rule: 'special', test: function (v) { return /[^A-Za-z0-9]/.test(v); } }
+  ];
+
+  function isPasswordStrongEnough(value) {
+    return PASSWORD_RULES.every(function (r) { return r.test(value); });
+  }
+
+  // Updates the live checklist under the password field and keeps the
+  // field's own validity message in sync so form.reportValidity() catches it.
+  function checkPasswordStrength() {
+    var value = password.value;
+    PASSWORD_RULES.forEach(function (r) {
+      var item = requirementsList.querySelector('[data-rule="' + r.rule + '"]');
+      if (item) item.classList.toggle('is-met', r.test(value));
+    });
+    password.setCustomValidity(
+      value && !isPasswordStrongEnough(value)
+        ? 'Password must be at least 10 characters and include an uppercase letter, a lowercase letter, a number, and a special character.'
+        : ''
+    );
+  }
 
   // Make sure the two password fields match before the form submits
   function checkPasswords() {
@@ -8,7 +40,10 @@
     confirmPassword.setCustomValidity(mismatch ? 'Passwords do not match.' : '');
   }
 
-  password.addEventListener('input', checkPasswords);
+  password.addEventListener('input', function () {
+    checkPasswordStrength();
+    checkPasswords(); // confirm-password's mismatch state can flip as password changes
+  });
   confirmPassword.addEventListener('input', checkPasswords);
 
   // Submit to the signup API and hand off to the login page on success
@@ -29,6 +64,7 @@
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     hideError();
+    checkPasswordStrength();
     checkPasswords();
 
     if (!form.reportValidity()) {
