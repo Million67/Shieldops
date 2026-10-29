@@ -554,6 +554,57 @@ a:focus-visible, button:focus-visible {
 }
 .form-error[hidden] { display: none; }
 
+.password-requirements {
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.password-requirements li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* Unmet (default): a hollow circle. Met: a green check, text turns green. */
+.password-requirements li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: #fff;
+}
+
+.password-requirements li.is-met {
+  color: #176b3a;
+}
+
+.password-requirements li.is-met::before {
+  border-color: #176b3a;
+  background: #176b3a;
+}
+
+.password-requirements li.is-met::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 5px;
+  width: 5px;
+  height: 2.5px;
+  border-left: 1.5px solid #fff;
+  border-bottom: 1.5px solid #fff;
+  transform: rotate(-45deg);
+}
+
 .btn-pill:disabled {
   background: #9db8d8;
   cursor: default;
