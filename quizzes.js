@@ -1,10 +1,8 @@
 // Quizzes hub — lists one card per lesson's quiz.
 //
-// Completion, and the last score shown on each card, now come from the real
-// backend (GET /api/progress in index.js), not localStorage. Beta only has
-// the one quiz, shared by every lesson (see quiz.js / POST /api/quiz/submit),
-// so finishing it marks every card here complete at once and all three show
-// the same last score — that's expected for now, not a bug.
+// Each lesson now has its own quiz, so completion and the "Last score" line
+// shown on each card come from that lesson's own entry in GET /api/progress
+// (topics[slug].lastScore), not a single shared score.
 (function () {
   fetch('/api/progress')
     .then(function (response) {
@@ -12,8 +10,6 @@
       return response.json();
     })
     .then(function (data) {
-      var lastScoreText = data.lastScore ? (data.lastScore.correct + '/' + data.lastScore.total) : null;
-
       document.querySelectorAll('[data-topic]').forEach(function (card) {
         var slug = card.getAttribute('data-topic');
         var topic = data.topics && data.topics[slug];
@@ -22,6 +18,8 @@
         var badge = card.querySelector('[data-status-for="' + slug + '"]');
         var scoreEl = card.querySelector('[data-score-for="' + slug + '"]');
         var actionBtn = card.querySelector('[data-action-for="' + slug + '"]');
+
+        var lastScoreText = topic.lastScore ? (topic.lastScore.correct + '/' + topic.lastScore.total) : null;
 
         if (badge) {
           badge.textContent = 'Completed';
