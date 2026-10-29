@@ -265,14 +265,16 @@ app.get('/api/checklist/:slug', (req, res) => {
 const RECENT_ACTIVITY_LIMIT = 5;
 
 // The one place every page reads progress from: which lessons are
-// complete, points, quizzes/topics completed, the most recent quiz score
-// (for the hub's "Last score" line), recent activity (for Home), and the
-// Risk Awareness Score.
+// complete, each lesson's own most recent score (for the hub's "Last
+// score" line — each lesson has its own quiz now, so this is per topic,
+// not global), points, quizzes/topics completed, recent activity (for
+// Home, mixed across lessons), and the Risk Awareness Score.
 //
 // Risk Awareness Score = the learner's average "percent correct" across
-// every quiz_completions row, rounded, minus 5 points per early exit
-// (quiz_exit_count), clamped to 0–100. null (shown as "—/100") until
-// they've completed a quiz at least once — an untaken quiz isn't a 0.
+// every quiz_completions row (every lesson's attempts pooled together),
+// rounded, minus 5 points per early exit (quiz_exit_count), clamped to
+// 0–100. Everyone starts at 100 until they've completed a quiz at least
+// once — an untaken quiz isn't a 0.
 app.get('/api/progress', async (req, res) => {
   const user = sessionUser(req);
   if (!user) {
@@ -280,7 +282,7 @@ app.get('/api/progress', async (req, res) => {
   }
 
   try {
-    const [topicRows, aggRow, recentRows, userRow] = await Promise.all([
+    const [topicRows, aggRow, lastScoreRows, recentRows, userRow] = await Promise.all([
       pool.query(
         'SELECT topic_slug, completed, completed_at FROM topic_progress WHERE user_id = $1',
         [user.id]
@@ -292,8 +294,19 @@ app.get('/api/progress', async (req, res) => {
          FROM quiz_completions WHERE user_id = $1`,
         [user.id]
       ),
+      // One row per lesson: that lesson's single most recent attempt —
+      // what each quiz hub card's "Last score" line reads.
       pool.query(
-        `SELECT correct_count, question_count, created_at FROM quiz_completions
+        `SELECT DISTINCT ON (topic_slug) topic_slug, correct_count, question_count, created_at
+         FROM quiz_completions
+         WHERE user_id = $1 AND topic_slug IS NOT NULL
+         ORDER BY topic_slug, created_at DESC`,
+        [user.id]
+      ),
+      // Most recent attempts overall, mixed across lessons — what the
+      // Home page's "Recent activity" card shows.
+      pool.query(
+        `SELECT correct_count, question_count, created_at, topic_slug FROM quiz_completions
          WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2`,
         [user.id, RECENT_ACTIVITY_LIMIT]
       ),
@@ -302,10 +315,19 @@ app.get('/api/progress', async (req, res) => {
 
     const topics = {};
     TOPIC_SLUGS.forEach((slug) => {
-      topics[slug] = { completed: false, completedAt: null };
+      topics[slug] = { completed: false, completedAt: null, lastScore: null };
     });
     topicRows.rows.forEach((row) => {
-      topics[row.topic_slug] = { completed: row.completed, completedAt: row.completed_at };
+      const existing = topics[row.topic_slug] || { lastScore: null };
+      topics[row.topic_slug] = {
+        ...existing,
+        completed: row.completed,
+        completedAt: row.completed_at,
+      };
+    });
+    lastScoreRows.rows.forEach((row) => {
+      if (!topics[row.topic_slug]) return; // attempt from a topic slug that no longer exists
+      topics[row.topic_slug].lastScore = { correct: row.correct_count, total: row.question_count };
     });
 
     const quizzesCompleted = aggRow.rows[0].quizzes_completed;
@@ -321,20 +343,16 @@ app.get('/api/progress', async (req, res) => {
     const riskScoreBase = avgPct === null ? 100 : Math.round(avgPct);
     const riskScore = Math.max(0, Math.min(100, riskScoreBase - exitCount * RISK_SCORE_PENALTY_PER_EXIT));
 
-    const lastScore = recentRows.rows[0]
-      ? { correct: recentRows.rows[0].correct_count, total: recentRows.rows[0].question_count }
-      : null;
-
     // Most-recent-first, for the Home page's "Recent activity" card.
     const recentActivity = recentRows.rows.map((row) => ({
       correct: row.correct_count,
       total: row.question_count,
       createdAt: row.created_at,
+      topicSlug: row.topic_slug,
     }));
 
     return res.status(200).json({
       topics,
-      lastScore,
       recentActivity,
       stats: {
         points: totalCorrect * POINTS_PER_CORRECT_ANSWER,
@@ -351,17 +369,18 @@ app.get('/api/progress', async (req, res) => {
   }
 });
 
-// Records one quiz attempt and (for beta — see the comment on
-// topic_progress in schema.sql) marks every lesson complete at once, since
-// there's only the one shared quiz right now.
+// Records one quiz attempt for the one lesson it belongs to, and marks
+// that lesson (only that lesson) complete.
 app.post('/api/quiz/submit', async (req, res) => {
   const user = sessionUser(req);
   if (!user) {
     return res.status(401).json({ error: 'Not logged in.' });
   }
 
-  const { correctCount, questionCount } = req.body || {};
+  const { topicSlug, correctCount, questionCount } = req.body || {};
   if (
+    typeof topicSlug !== 'string' ||
+    !TOPIC_SLUGS.includes(topicSlug) ||
     !Number.isInteger(correctCount) ||
     !Number.isInteger(questionCount) ||
     correctCount < 0 ||
@@ -373,24 +392,20 @@ app.post('/api/quiz/submit', async (req, res) => {
 
   try {
     await pool.query(
-      'INSERT INTO quiz_completions (user_id, correct_count, question_count) VALUES ($1, $2, $3)',
-      [user.id, correctCount, questionCount]
+      'INSERT INTO quiz_completions (user_id, correct_count, question_count, topic_slug) VALUES ($1, $2, $3, $4)',
+      [user.id, correctCount, questionCount, topicSlug]
     );
 
-    // completed_at is only set the first time a lesson is completed —
+    // completed_at is only set the first time this lesson is completed —
     // COALESCE keeps the original timestamp on a retake instead of
     // re-stamping it.
-    await Promise.all(
-      TOPIC_SLUGS.map((slug) =>
-        pool.query(
-          `INSERT INTO topic_progress (user_id, topic_slug, completed, completed_at)
-           VALUES ($1, $2, true, now())
-           ON CONFLICT (user_id, topic_slug)
-           DO UPDATE SET completed = true,
-                         completed_at = COALESCE(topic_progress.completed_at, EXCLUDED.completed_at)`,
-          [user.id, slug]
-        )
-      )
+    await pool.query(
+      `INSERT INTO topic_progress (user_id, topic_slug, completed, completed_at)
+       VALUES ($1, $2, true, now())
+       ON CONFLICT (user_id, topic_slug)
+       DO UPDATE SET completed = true,
+                     completed_at = COALESCE(topic_progress.completed_at, EXCLUDED.completed_at)`,
+      [user.id, topicSlug]
     );
 
     return res.status(200).json({ success: true });
