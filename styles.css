@@ -1060,7 +1060,14 @@ a:focus-visible, button:focus-visible {
 .score-bar-fill {
   height: 100%;
   background: var(--btn-blue);
+  transition: width 0.2s, background-color 0.2s;
 }
+
+/* Risk Awareness Score color tiers — set via JS in profile.js based on the
+   score: red 0-65, yellow 66-85, green 86-100. */
+.score-bar-fill--red { background: #b3261e; }
+.score-bar-fill--yellow { background: #c98a00; }
+.score-bar-fill--green { background: #176b3a; }
 
 .profile-topics {
   margin-top: 20px;
