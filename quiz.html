@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz · ThreatTalk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="home.html">
+      <img class="brand-logo" src="logo.png" alt="ShieldOps logo">
+      <div>
+        <p class="brand-name">ThreatTalk</p>
+        <p class="brand-tagline">Reimagining of cybersecurity through intelligent, adaptive conversation.</p>
+      </div>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      <button class="nav-icon" type="button" aria-label="cookie policy" onclick="togglePrivacyBanner()">ⓘ</button>
+      <a class="nav-link nav-link--active" href="#about">About Us</a>
+      <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
+      <button class="nav-icon" type="button" aria-label="Language">🌐</button>
+      <div class="streak">
+        <button class="nav-icon" type="button" aria-label="Daily streak">🔥</button>
+        <span class="chip">keep streak?</span>
+      </div>
+      <span class="nav-gap" aria-hidden="true"></span>
+      <a class="chip chip--active" href="home.html">Home</a>
+      <a class="chip chip--active" href="learn.html">Learn</a>
+      <a class="chip chip--active" href="quizzes.html">Quiz</a>
+      <a class="chip chip--active" href="profile.html">Profile</a>
+      <button class="chip chip--danger" type="button" id="logout-button">Log out</button>
+    </nav>
+  </header>
+
+  <main class="quiz">
+
+    <!-- Quiz banner: name is filled in by quiz.js from the lesson the
+         learner just came from (via the ?topic= param) -->
+    <section class="quiz-banner" aria-label="Quiz">
+      <div class="quiz-banner-left">
+        <span class="quiz-banner-icon" aria-hidden="true">🏆</span>
+        <p class="quiz-banner-title" id="quiz-banner-title">Quiz</p>
+      </div>
+    </section>
+
+    <!-- Quiz card: everything inside is rendered/managed by quiz.js -->
+    <section class="quiz-card" id="quiz-card">
+
+      <div class="quiz-card-head">
+        <div>
+          <h1 class="quiz-card-title" id="quiz-title">Quiz</h1>
+          <p class="quiz-card-subtitle" id="quiz-subtitle"></p>
+        </div>
+        <p class="quiz-progress-label" id="quiz-progress-label">Question 1/3</p>
+      </div>
+
+      <div class="quiz-progress-bar" aria-hidden="true">
+        <div class="quiz-progress-bar-fill" id="quiz-progress-fill"></div>
+      </div>
+
+      <p class="quiz-question" id="quiz-question"></p>
+
+      <div class="quiz-options" id="quiz-options" role="radiogroup" aria-label="Answer options"></div>
+
+      <div class="quiz-actions">
+        <a class="quiz-exit-link" href="learn.html" id="quiz-exit-link">Exit Quiz</a>
+        <button class="btn-pill quiz-submit-btn" type="button" id="quiz-submit-btn" disabled>Submit Answer</button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Exit-quiz confirmation. Hidden by default; quiz.js shows it instead of
+       following the Exit Quiz link whenever the quiz isn't finished yet. -->
+  <div class="quiz-modal-backdrop" id="quiz-exit-modal" hidden>
+    <div class="quiz-modal" role="alertdialog" aria-labelledby="quiz-exit-modal-title" aria-describedby="quiz-exit-modal-text">
+      <h2 class="quiz-modal-title" id="quiz-exit-modal-title">Leave this quiz?</h2>
+      <p class="quiz-modal-text" id="quiz-exit-modal-text">
+        You'll lose your progress on this quiz, and leaving before you finish will count against your risk awareness score.
+      </p>
+      <div class="quiz-modal-actions">
+        <button class="quiz-modal-cancel-btn" type="button" id="quiz-exit-cancel-btn">Keep going</button>
+        <button class="quiz-modal-confirm-btn" type="button" id="quiz-exit-confirm-btn">Exit quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy & Cookie Banner (starts hidden — opened only via the ⓘ icon above) -->
+  <div id="privacyBanner" class="privacy-cookie-banner hidden">
+    <p class="banner-text">
+      This site uses cookies. This website uses cookies and similar technology to support chatbot functionality, track your progress through modules and quizzes, and improve your overall experience.
+      When you create an account, we may collect personal information such as your name, date of birth, email address, phone number, and quiz performance data to provide personalized features like ratings and progress tracking. By clicking "Got It", you agree to our use of cookies. You can learn more in our <a href="privacy.html" target="_blank">Privacy Policy</a>.
+    </p>
+    <div class="banner-actions">
+      <button class="accept-btn" onclick="dismissPrivacyBanner()">Got it</button>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+  <script src="quiz.js"></script>
+</body>
+</html>

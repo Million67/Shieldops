@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quizzes · ThreatTalk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="home.html">
+      <img class="brand-logo" src="logo.png" alt="ShieldOps logo">
+      <div>
+        <p class="brand-name">ThreatTalk</p>
+        <p class="brand-tagline">Reimagining of cybersecurity through intelligent, adaptive conversation.</p>
+      </div>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      <button class="nav-icon" type="button" aria-label="cookie policy" onclick="togglePrivacyBanner()">ⓘ</button>
+      <a class="nav-link nav-link--active" href="#about">About Us</a>
+      <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
+      <button class="nav-icon" type="button" aria-label="Language">🌐</button>
+      <div class="streak">
+        <button class="nav-icon" type="button" aria-label="Daily streak">🔥</button>
+        <span class="chip">keep streak?</span>
+      </div>
+      <span class="nav-gap" aria-hidden="true"></span>
+      <a class="chip chip--active" href="home.html">Home</a>
+      <a class="chip chip--active" href="learn.html">Learn</a>
+      <a class="chip chip--active" href="quizzes.html">Quiz</a>
+      <a class="chip chip--active" href="profile.html">Profile</a>
+      <button class="chip chip--danger" type="button" id="logout-button">Log out</button>
+    </nav>
+  </header>
+
+  <main class="module">
+    <div class="module-hero">
+      <span class="module-hero-icon" aria-hidden="true">🏆</span>
+      <h1 class="module-title">Quizzes</h1>
+      <p class="module-subtitle">One quiz per lesson — test what you've covered, then come back and retake anytime.</p>
+    </div>
+
+    <!-- Cards are filled in by quizzes.js from localStorage completion state.
+         Beta note: every lesson shares the one quiz right now, so completing
+         it marks all three lessons/cards complete together — see quiz.js. -->
+    <div class="topic-grid" id="quiz-grid">
+      <div class="topic-card" data-topic="strong-passwords">
+        <div class="topic-card-top">
+          <span class="topic-icon" aria-hidden="true">🧱</span>
+          <span class="status-badge" data-status-for="strong-passwords">Not started</span>
+        </div>
+        <h2 class="topic-title">Creating Strong Passwords</h2>
+        <p class="quiz-card-score" data-score-for="strong-passwords">3 questions · a few minutes</p>
+        <a class="chat-complete-btn" style="align-self: flex-start;" data-action-for="strong-passwords" href="quiz.html?topic=strong-passwords">Start Quiz</a>
+      </div>
+
+      <div class="topic-card" data-topic="managers-mfa">
+        <div class="topic-card-top">
+          <span class="topic-icon" aria-hidden="true">🔑</span>
+          <span class="status-badge" data-status-for="managers-mfa">Not started</span>
+        </div>
+        <h2 class="topic-title">Password Managers &amp; MFA</h2>
+        <p class="quiz-card-score" data-score-for="managers-mfa">3 questions · a few minutes</p>
+        <a class="chat-complete-btn" style="align-self: flex-start;" data-action-for="managers-mfa" href="quiz.html?topic=managers-mfa">Start Quiz</a>
+      </div>
+
+      <div class="topic-card" data-topic="after-a-breach">
+        <div class="topic-card-top">
+          <span class="topic-icon" aria-hidden="true">🚨</span>
+          <span class="status-badge" data-status-for="after-a-breach">Not started</span>
+        </div>
+        <h2 class="topic-title">Responding to a Breach</h2>
+        <p class="quiz-card-score" data-score-for="after-a-breach">3 questions · a few minutes</p>
+        <a class="chat-complete-btn" style="align-self: flex-start;" data-action-for="after-a-breach" href="quiz.html?topic=after-a-breach">Start Quiz</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Privacy & Cookie Banner (starts hidden — opened only via the ⓘ icon above) -->
+  <div id="privacyBanner" class="privacy-cookie-banner hidden">
+    <p class="banner-text">
+      This site uses cookies. This website uses cookies and similar technology to support chatbot functionality, track your progress through modules and quizzes, and improve your overall experience.
+      When you create an account, we may collect personal information such as your name, date of birth, email address, phone number, and quiz performance data to provide personalized features like ratings and progress tracking. By clicking "Got It", you agree to our use of cookies. You can learn more in our <a href="privacy.html" target="_blank">Privacy Policy</a>.
+    </p>
+    <div class="banner-actions">
+      <button class="accept-btn" onclick="dismissPrivacyBanner()">Got it</button>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+  <script src="quizzes.js"></script>
+</body>
+</html>
