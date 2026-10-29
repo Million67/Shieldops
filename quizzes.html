@@ -45,9 +45,9 @@
       <p class="module-subtitle">One quiz per lesson — test what you've covered, then come back and retake anytime.</p>
     </div>
 
-    <!-- Cards are filled in by quizzes.js from localStorage completion state.
-         Beta note: every lesson shares the one quiz right now, so completing
-         it marks all three lessons/cards complete together — see quiz.js. -->
+    <!-- Cards are filled in by quizzes.js from the real backend
+         (GET /api/progress). Each lesson has its own quiz now — completing
+         one only marks that one lesson/card complete, see quiz.js. -->
     <div class="topic-grid" id="quiz-grid">
       <div class="topic-card" data-topic="strong-passwords">
         <div class="topic-card-top">
@@ -55,7 +55,7 @@
           <span class="status-badge" data-status-for="strong-passwords">Not started</span>
         </div>
         <h2 class="topic-title">Creating Strong Passwords</h2>
-        <p class="quiz-card-score" data-score-for="strong-passwords">3 questions · a few minutes</p>
+        <p class="quiz-card-score" data-score-for="strong-passwords">5 questions · a few minutes</p>
         <a class="chat-complete-btn" style="align-self: flex-start;" data-action-for="strong-passwords" href="quiz.html?topic=strong-passwords">Start Quiz</a>
       </div>
 
@@ -65,7 +65,7 @@
           <span class="status-badge" data-status-for="managers-mfa">Not started</span>
         </div>
         <h2 class="topic-title">Password Managers &amp; MFA</h2>
-        <p class="quiz-card-score" data-score-for="managers-mfa">3 questions · a few minutes</p>
+        <p class="quiz-card-score" data-score-for="managers-mfa">5 questions · a few minutes</p>
         <a class="chat-complete-btn" style="align-self: flex-start;" data-action-for="managers-mfa" href="quiz.html?topic=managers-mfa">Start Quiz</a>
       </div>
 
@@ -75,7 +75,7 @@
           <span class="status-badge" data-status-for="after-a-breach">Not started</span>
         </div>
         <h2 class="topic-title">Responding to a Breach</h2>
-        <p class="quiz-card-score" data-score-for="after-a-breach">3 questions · a few minutes</p>
+        <p class="quiz-card-score" data-score-for="after-a-breach">5 questions · a few minutes</p>
         <a class="chat-complete-btn" style="align-self: flex-start;" data-action-for="after-a-breach" href="quiz.html?topic=after-a-breach">Start Quiz</a>
       </div>
     </div>
