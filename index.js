@@ -49,6 +49,12 @@ topics, not to test or compete with them.
 
 - Keep answers short and conversational — a few sentences, not an essay.
   You're replying inside a chat bubble, not writing documentation.
+- Formatting: write in plain sentences grouped into short paragraphs, with
+  a blank line between separate ideas so they don't run together. A short
+  "-" list is fine when you're giving a few concrete steps or examples.
+  Never use markdown tables, headers (#), or code fences — they don't
+  render in this chat bubble. You can **bold** a key term sparingly if it
+  helps it stand out.
 - Be encouraging. If the learner seems confused, reassure them it's a
   common question before explaining.
 - Only answer questions about cybersecurity and online safety (passwords,
@@ -292,10 +298,12 @@ app.get('/api/progress', async (req, res) => {
     const exitCount = userRow.rows[0] ? userRow.rows[0].quiz_exit_count : 0;
     const topicsCompleted = Object.values(topics).filter((t) => t.completed).length;
 
-    const riskScore =
-      avgPct === null
-        ? null
-        : Math.max(0, Math.min(100, Math.round(avgPct) - exitCount * RISK_SCORE_PENALTY_PER_EXIT));
+    // Everyone starts at a full 100 — a learner who hasn't taken a quiz yet
+    // hasn't demonstrated any risk, so there's no reason to show an empty
+    // bar. Once they've completed at least one quiz, the score reflects
+    // their actual average instead. Early exits dock points either way.
+    const riskScoreBase = avgPct === null ? 100 : Math.round(avgPct);
+    const riskScore = Math.max(0, Math.min(100, riskScoreBase - exitCount * RISK_SCORE_PENALTY_PER_EXIT));
 
     const lastScore = recentRows.rows[0]
       ? { correct: recentRows.rows[0].correct_count, total: recentRows.rows[0].question_count }
