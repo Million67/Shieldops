@@ -3,12 +3,15 @@
 // After the static intro card below, the AI takes over as a guide: it's
 // told (server-side, see /api/chat in index.js) which concepts this topic's
 // checklist covers, and asked to self-report which ones it's covered after
-// every reply. This file tracks that running conversation, renders the
-// checklist panel, and persists covered concepts the same placeholder way
-// as everything else right now — localStorage, until a real `progress`
-// table exists.
+// every reply. This file tracks that running conversation and renders the
+// checklist panel.
+//
+// NOTE: the in-lesson concept checklist below (coveredIds) still persists to
+// localStorage, not the backend — it's a smaller, separate feature from
+// lesson *completion*, which now lives in Postgres (see GET /api/progress
+// and the "Take Quiz" button state at the bottom of this file). Worth
+// moving the checklist server-side too at some point, just not done yet.
 (function () {
-  var STORAGE_PREFIX = 'threattalk:topic:';
   var COVERAGE_STORAGE_PREFIX = 'threattalk:coverage:';
 
   var TOPICS = {
@@ -456,27 +459,32 @@
 
   startGuidedConversation();
 
-  // Completion state — stored locally for now (no progress table yet).
+  // Completion state now comes from the backend (GET /api/progress). The
+  // lesson itself is no longer marked complete from in here: that happens
+  // on first finishing this lesson's quiz (see quiz.js / POST
+  // /api/quiz/submit). This button just reflects that state and sends the
+  // learner to take the quiz.
   if (completeBtn) {
-    var storageKey = STORAGE_PREFIX + slug;
-    var isComplete = window.localStorage && localStorage.getItem(storageKey) === 'completed';
-
-    function renderCompleteState() {
-      completeBtn.textContent = isComplete ? 'Completed ✓' : 'Mark complete';
+    function renderCompleteState(isComplete) {
+      completeBtn.textContent = isComplete ? 'Completed ✓' : 'Take Quiz';
       completeBtn.classList.toggle('chat-complete-btn--done', isComplete);
     }
-    renderCompleteState();
+    renderCompleteState(false);
+
+    fetch('/api/progress')
+      .then(function (response) {
+        return response.ok ? response.json() : null;
+      })
+      .then(function (data) {
+        var topic = data && data.topics && data.topics[slug];
+        if (topic && topic.completed) renderCompleteState(true);
+      })
+      .catch(function () {
+        // Not logged in, or the request failed — button stays "Take Quiz".
+      });
 
     completeBtn.addEventListener('click', function () {
-      isComplete = !isComplete;
-      if (window.localStorage) {
-        if (isComplete) {
-          localStorage.setItem(storageKey, 'completed');
-        } else {
-          localStorage.removeItem(storageKey);
-        }
-      }
-      renderCompleteState();
+      window.location.href = 'quiz.html?topic=' + encodeURIComponent(slug);
     });
   }
 })();
