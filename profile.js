@@ -2,9 +2,10 @@
 //
 // All of it now comes from the real backend (GET /api/progress in
 // index.js) — points, quizzes/topics completed, and the Risk Awareness
-// Score (see the formula comment on that route). If the request fails —
-// not logged in, or a network hiccup — everything just stays at its
-// "no data yet" placeholder state instead of erroring.
+// Score (see the formula comment on that route; it starts everyone at a
+// full 100 until they've taken a quiz). If the request fails — not logged
+// in, or a network hiccup — everything just stays at its placeholder state
+// instead of erroring.
 (function () {
   var pointsEl = document.querySelector('[data-stat="points"]');
   var quizzesEl = document.querySelector('[data-stat="quizzes"]');
@@ -29,9 +30,13 @@
             : '—';
       }
 
-      var hasRiskScore = stats.riskScore != null;
-      if (scoreLabelEl) scoreLabelEl.textContent = hasRiskScore ? stats.riskScore + '/100' : '—/100';
-      if (scoreFillEl) scoreFillEl.style.width = (hasRiskScore ? stats.riskScore : 0) + '%';
+      // riskScore comes back as a number 0-100 from the backend — everyone
+      // starts at a full 100 until they've actually taken a quiz (see the
+      // comment on GET /api/progress in index.js). Falling back to 100 here
+      // too just guards against an unexpected missing field.
+      var riskScore = stats.riskScore != null ? stats.riskScore : 100;
+      if (scoreLabelEl) scoreLabelEl.textContent = riskScore + '/100';
+      if (scoreFillEl) scoreFillEl.style.width = riskScore + '%';
 
       document.querySelectorAll('[data-status-for]').forEach(function (badge) {
         var slug = badge.getAttribute('data-status-for');
