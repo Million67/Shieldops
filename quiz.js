@@ -1,5 +1,5 @@
 (function () {
-  // Each lesson has its own 3-question quiz, hardcoded here rather than
+  // Each lesson has its own 5-question quiz, hardcoded here rather than
   // pulled from an API — there's a real backend (see index.js), but it
   // stores attempts/scores per lesson, not question content itself. Each
   // question carries an "explanation" used for the end-of-quiz debrief on
@@ -18,51 +18,172 @@
 
   // One question bank per lesson slug — this is what makes each lesson's
   // "Take Quiz" button lead to that lesson's own quiz instead of a shared
-  // one. TODO: placeholder content below until the real questions/answers
-  // for each lesson are in; swap each array's contents in directly, the
-  // shape (prompt/options/correctIndex/explanation) stays the same.
+  // one.
   var QUESTION_BANKS = {
     "strong-passwords": [
       {
         prompt: "Which of the following is the strongest password?",
         options: [
-          "Password123",
-          "123456789",
-          "Blue!Tiger#Moon82",
-          "YourName2024"
+          "password2024",
+          "T7#mQ9!vL2@p",
+          "JohnSmith88",
+          "qwerty123456"
+        ],
+        correctIndex: 1,
+        explanation: "T7#mQ9!vL2@p mixes uppercase, lowercase, numbers, and symbols without relying on a dictionary word or personal info — that unpredictability is what makes it hard to crack. The others are either common patterns attackers try first or built from guessable personal details."
+      },
+      {
+        prompt: "Why is it important to create a strong password?",
+        options: [
+          "To protect your accounts from unauthorized access",
+          "To make it easier to remember",
+          "To comply with a website's character limit",
+          "To speed up the login process"
+        ],
+        correctIndex: 0,
+        explanation: "A strong password is the main thing standing between an attacker and your account — a weak one can be guessed or cracked quickly, giving someone unauthorized access to whatever that account protects."
+      },
+      {
+        prompt: "Which of the following should you avoid when creating a password?",
+        options: [
+          "Using a mix of symbols and numbers",
+          "Using your name or birthday",
+          "Making it longer than 12 characters",
+          "Using a password manager to store it"
+        ],
+        correctIndex: 1,
+        explanation: "Personal details like your name or birthday are often publicly known or easy to guess, so attackers try them first. A strong password should avoid anything tied to your identity."
+      },
+      {
+        prompt: "What is the recommended minimum length for a strong password when creating one yourself?",
+        options: [
+          "6 characters",
+          "8 characters",
+          "15 characters",
+          "20 characters"
         ],
         correctIndex: 2,
-        explanation: "Blue!Tiger#Moon82 mixes uppercase, lowercase, numbers, and symbols without relying on a dictionary word or personal info — that unpredictability is what makes it hard to crack. The others are either common patterns attackers try first or built from guessable personal details."
+        explanation: "Shorter passwords are far faster for modern cracking tools to guess through. Aiming for at least 15 characters gives you a much larger margin of safety."
+      },
+      {
+        prompt: "True or False: Using the same strong password for multiple accounts is a safe practice.",
+        options: [
+          "True",
+          "False"
+        ],
+        correctIndex: 1,
+        explanation: "Even a strong password becomes a liability once it's reused — if any one of those accounts is breached, every other account using that same password is exposed too."
       }
-      // TODO: 2 more strong-passwords questions go here.
     ],
     "managers-mfa": [
       {
-        prompt: "What is the main purpose of Multi-Factor Authentication (MFA)?",
+        prompt: "What is the main purpose of a password manager?",
         options: [
-          "To replace the need for a password entirely",
-          "To add an extra layer of security by requiring more than one type of verification",
-          "To speed up the login process",
-          "To let you share your account safely with others"
+          "To securely store and manage passwords",
+          "To generate usernames automatically",
+          "To block phishing emails",
+          "To speed up your internet connection"
+        ],
+        correctIndex: 0,
+        explanation: "A password manager securely stores every password you use so you don't have to remember or reuse them — it can also generate strong, unique ones for each account."
+      },
+      {
+        prompt: "What does Multi-Factor Authentication (MFA) do?",
+        options: [
+          "Replaces the need for a password entirely",
+          "Adds an extra layer of security by requiring multiple forms of verification",
+          "Automatically changes your password every month",
+          "Lets multiple people share one login safely"
         ],
         correctIndex: 1,
         explanation: "MFA doesn't replace your password — it adds a second proof of identity, like a code from your phone or a security key, so a stolen password alone isn't enough for someone to get in."
+      },
+      {
+        prompt: "Which of the following is an example of MFA?",
+        options: [
+          "Using the same password on two different sites",
+          "Entering your password and a code from an authenticator app",
+          "Writing your password on a sticky note",
+          "Using a longer password"
+        ],
+        correctIndex: 1,
+        explanation: "MFA means combining something you know (your password) with something you have (like a code from an authenticator app) — a second, independent factor that a stolen password alone can't satisfy."
+      },
+      {
+        prompt: "What is one major benefit of using a password manager?",
+        options: [
+          "It allows you to use strong, unique passwords without memorizing each one",
+          "It lets you skip creating passwords altogether",
+          "It automatically logs you into any website",
+          "It shares your passwords with trusted friends for backup"
+        ],
+        correctIndex: 0,
+        explanation: "Password managers remove the tradeoff between strong and memorable — it generates and stores a unique, complex password for every account so you never have to recall them yourself."
+      },
+      {
+        prompt: "True or False: Multi-Factor Authentication can help protect your account even if someone steals your password.",
+        options: [
+          "True",
+          "False"
+        ],
+        correctIndex: 0,
+        explanation: "That's exactly the point of MFA — even with your password in hand, an attacker still needs the second factor (like your phone or security key) to actually get in."
       }
-      // TODO: 2 more managers-mfa questions go here.
     ],
     "after-a-breach": [
       {
-        prompt: "What should you do if you receive a notification that your personal information was exposed in a data breach?",
+        prompt: "What should you do first if you suspect your account has been hacked?",
         options: [
-          "Ignore it — breaches happen all the time",
-          "Wait a few months to see if anything bad happens before acting",
-          "Delete the affected account and never use that service again",
-          "Change affected passwords, enable MFA, and monitor your accounts for suspicious activity"
+          "Wait and see if anything else happens",
+          "Secure your account by changing your password using a trusted device",
+          "Delete the account immediately",
+          "Post about it on social media to warn others"
         ],
-        correctIndex: 3,
-        explanation: "Speed matters most here: change the password (and anywhere else you reused it), turn on MFA if it wasn't already on, and keep an eye on your accounts for anything unusual. Waiting or ignoring it just gives an attacker more time to use your exposed info."
+        correctIndex: 1,
+        explanation: "Changing your password right away, from a device you trust, cuts off the attacker's access as quickly as possible — every minute spent waiting is time they can keep using the account."
+      },
+      {
+        prompt: "Why is it important to report a security breach immediately?",
+        options: [
+          "To prevent further damage and protect sensitive information",
+          "Because it's required by most websites' terms of service",
+          "To get a refund from the company",
+          "Because breaches rarely cause real harm"
+        ],
+        correctIndex: 0,
+        explanation: "Reporting quickly lets the affected service lock down accounts and investigate before more damage is done — delaying gives an attacker more time to cause harm."
+      },
+      {
+        prompt: "What should you do if you receive a notification that your password was exposed in a data breach?",
+        options: [
+          "Ignore it since the company will handle it",
+          "Change the exposed password and any other accounts using it",
+          "Wait a few weeks before taking action",
+          "Only change the password if you notice something wrong"
+        ],
+        correctIndex: 1,
+        explanation: "Speed matters most here: change the exposed password and anywhere else you reused it. Waiting or assuming it'll be handled for you just gives an attacker more time to use it."
+      },
+      {
+        prompt: "What should you do if you notice suspicious activity on your online account?",
+        options: [
+          "Review recent account activity, secure your account, and report the suspicious activity",
+          "Clear your browser history and hope it resolves itself",
+          "Immediately delete all your accounts",
+          "Share your login with a friend to double-check"
+        ],
+        correctIndex: 0,
+        explanation: "Checking recent activity tells you what actually happened, securing the account (new password, MFA) stops further access, and reporting it gets the service's help containing the issue."
+      },
+      {
+        prompt: "True or False: After a security breach, enabling Multi-Factor Authentication (MFA) can help prevent future unauthorized access.",
+        options: [
+          "True",
+          "False"
+        ],
+        correctIndex: 0,
+        explanation: "MFA adds a second factor beyond just the password, so even if a password leaks again in the future, that alone won't be enough to get into the account."
       }
-      // TODO: 2 more after-a-breach questions go here.
     ]
   };
 
