@@ -3,6 +3,14 @@
 // in index.js). If the request fails — not logged in, or a network hiccup —
 // everything just stays at its day-one placeholder state instead of erroring.
 (function () {
+  // Mirrors TOPIC_TITLES in quiz.js / lesson-chat.js — kept small and
+  // separate here since home.html doesn't load those files.
+  var TOPIC_TITLES = {
+    'strong-passwords': 'Creating Strong Passwords',
+    'managers-mfa': 'Password Managers & MFA',
+    'after-a-breach': 'Responding to a Breach'
+  };
+
   var bannerIconEl = document.getElementById('home-banner-icon');
   var bannerEyebrowEl = document.getElementById('home-banner-eyebrow');
   var bannerTitleEl = document.getElementById('home-banner-title');
@@ -16,16 +24,14 @@
     if (topicsCompleted === 0) return; // leave the default "Get started" state as-is
 
     if (totalTopics > 0 && topicsCompleted >= totalTopics) {
-      // Beta note: the one shared quiz marks every lesson complete at once,
-      // so this "all done" state is the one a learner actually reaches today.
       bannerIconEl.textContent = '🎉';
       bannerEyebrowEl.textContent = 'Nice work';
       bannerTitleEl.textContent = "You've completed every lesson — retake a quiz anytime to keep your score fresh.";
       bannerCtaEl.textContent = 'Retake a quiz';
       bannerCtaEl.href = 'quizzes.html';
     } else {
-      // Not reachable yet in the beta (completion is all-or-nothing), but
-      // kept correct for whenever lessons unlock their own quizzes.
+      // Each lesson has its own quiz now, so this partial-progress state is
+      // reachable — e.g. 1 of 3 lessons done, 2 still to go.
       bannerIconEl.textContent = '🔐';
       bannerEyebrowEl.textContent = 'Keep going';
       bannerTitleEl.textContent = "You've completed " + topicsCompleted + ' of ' + totalTopics + ' lessons — keep going.';
@@ -40,16 +46,23 @@
     activityListEl.innerHTML = '';
     entries.forEach(function (entry) {
       var allCorrect = entry.correct === entry.total;
+      var lessonName = TOPIC_TITLES[entry.topicSlug] || 'Security Awareness';
       var row = document.createElement('div');
       row.className = 'activity-row';
       row.innerHTML =
         '<span class="activity-row-icon" aria-hidden="true">' + (allCorrect ? '✅' : '📝') + '</span>' +
         '<div>' +
-          '<p class="activity-row-title">Quiz completed — ' + entry.correct + '/' + entry.total + ' correct</p>' +
+          '<p class="activity-row-title">' + escapeHtml(lessonName) + ' quiz — ' + entry.correct + '/' + entry.total + ' correct</p>' +
           '<p class="activity-row-date">' + formatDate(entry.createdAt) + '</p>' +
         '</div>';
       activityListEl.appendChild(row);
     });
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   function formatDate(iso) {
