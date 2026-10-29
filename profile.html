@@ -69,10 +69,13 @@
     <section class="profile-score" aria-label="Risk awareness score">
       <div class="profile-score-top">
         <p class="profile-score-title">Risk Awareness Score</p>
-        <p class="profile-score-value" data-stat="risk-score-label">—/100</p>
+        <!-- Starts full — see the comment on GET /api/progress in index.js:
+             a learner who hasn't taken a quiz yet hasn't shown any risk, so
+             there's no reason to show an empty bar before profile.js loads. -->
+        <p class="profile-score-value" data-stat="risk-score-label">100/100</p>
       </div>
       <div class="score-bar">
-        <div class="score-bar-fill" data-stat="risk-score-fill" style="width: 0%;"></div>
+        <div class="score-bar-fill" data-stat="risk-score-fill" style="width: 100%;"></div>
       </div>
     </section>
 
