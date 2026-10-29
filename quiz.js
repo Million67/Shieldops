@@ -1,18 +1,12 @@
 (function () {
-  // Beta: a short, fixed 3-question quiz, hardcoded here rather than pulled
-  // from an API — there's a real backend now (see index.js), but it stores
-  // attempts/scores, not question content itself yet. Each question carries
-  // an "explanation" used for the end-of-quiz debrief on any question the
-  // learner missed. Once an answer is submitted the learner moves forward
-  // only — there is no "back" affordance anywhere in this file, by design.
-  // Point values aren't surfaced to the learner during the quiz itself,
-  // only in the exit-early warning below.
-  //
-  // NOTE: the question bank below is the same for every lesson right now —
-  // there's only one quiz written so far, covering password strength, MFA,
-  // and breach response. The title and subtitle are already wired to the
-  // lesson the learner came from; once there's a question bank per lesson,
-  // key QUESTIONS off `slug` the same way TOPIC_TITLES is keyed below.
+  // Each lesson has its own 3-question quiz, hardcoded here rather than
+  // pulled from an API — there's a real backend (see index.js), but it
+  // stores attempts/scores per lesson, not question content itself. Each
+  // question carries an "explanation" used for the end-of-quiz debrief on
+  // any question the learner missed. Once an answer is submitted the
+  // learner moves forward only — there is no "back" affordance anywhere in
+  // this file, by design. Point values aren't surfaced to the learner
+  // during the quiz itself, only in the exit-early warning below.
 
   // Mirrors the titles in lesson-chat.js's TOPICS map — kept small and
   // separate here since quiz.html doesn't load that file's bot-script content.
@@ -22,6 +16,56 @@
     "after-a-breach": "Responding to a Breach"
   };
 
+  // One question bank per lesson slug — this is what makes each lesson's
+  // "Take Quiz" button lead to that lesson's own quiz instead of a shared
+  // one. TODO: placeholder content below until the real questions/answers
+  // for each lesson are in; swap each array's contents in directly, the
+  // shape (prompt/options/correctIndex/explanation) stays the same.
+  var QUESTION_BANKS = {
+    "strong-passwords": [
+      {
+        prompt: "Which of the following is the strongest password?",
+        options: [
+          "Password123",
+          "123456789",
+          "Blue!Tiger#Moon82",
+          "YourName2024"
+        ],
+        correctIndex: 2,
+        explanation: "Blue!Tiger#Moon82 mixes uppercase, lowercase, numbers, and symbols without relying on a dictionary word or personal info — that unpredictability is what makes it hard to crack. The others are either common patterns attackers try first or built from guessable personal details."
+      }
+      // TODO: 2 more strong-passwords questions go here.
+    ],
+    "managers-mfa": [
+      {
+        prompt: "What is the main purpose of Multi-Factor Authentication (MFA)?",
+        options: [
+          "To replace the need for a password entirely",
+          "To add an extra layer of security by requiring more than one type of verification",
+          "To speed up the login process",
+          "To let you share your account safely with others"
+        ],
+        correctIndex: 1,
+        explanation: "MFA doesn't replace your password — it adds a second proof of identity, like a code from your phone or a security key, so a stolen password alone isn't enough for someone to get in."
+      }
+      // TODO: 2 more managers-mfa questions go here.
+    ],
+    "after-a-breach": [
+      {
+        prompt: "What should you do if you receive a notification that your personal information was exposed in a data breach?",
+        options: [
+          "Ignore it — breaches happen all the time",
+          "Wait a few months to see if anything bad happens before acting",
+          "Delete the affected account and never use that service again",
+          "Change affected passwords, enable MFA, and monitor your accounts for suspicious activity"
+        ],
+        correctIndex: 3,
+        explanation: "Speed matters most here: change the password (and anywhere else you reused it), turn on MFA if it wasn't already on, and keep an eye on your accounts for anything unusual. Waiting or ignoring it just gives an attacker more time to use your exposed info."
+      }
+      // TODO: 2 more after-a-breach questions go here.
+    ]
+  };
+
   var params = new URLSearchParams(window.location.search);
   var slug = params.get("topic");
   var lessonTitle = TOPIC_TITLES[slug] || "Security Awareness";
@@ -29,41 +73,7 @@
   // which module this quiz came from; otherwise fall back to Learn itself.
   var backUrl = TOPIC_TITLES[slug] ? "password-security.html" : "learn.html";
 
-  var QUESTIONS = [
-    {
-      prompt: "Which of the following is the strongest password?",
-      options: [
-        "Password123",
-        "123456789",
-        "Blue!Tiger#Moon82",
-        "YourName2024"
-      ],
-      correctIndex: 2,
-      explanation: "Blue!Tiger#Moon82 mixes uppercase, lowercase, numbers, and symbols without relying on a dictionary word or personal info — that unpredictability is what makes it hard to crack. The others are either common patterns attackers try first or built from guessable personal details."
-    },
-    {
-      prompt: "What is the main purpose of Multi-Factor Authentication (MFA)?",
-      options: [
-        "To replace the need for a password entirely",
-        "To add an extra layer of security by requiring more than one type of verification",
-        "To speed up the login process",
-        "To let you share your account safely with others"
-      ],
-      correctIndex: 1,
-      explanation: "MFA doesn't replace your password — it adds a second proof of identity, like a code from your phone or a security key, so a stolen password alone isn't enough for someone to get in."
-    },
-    {
-      prompt: "What should you do if you receive a notification that your personal information was exposed in a data breach?",
-      options: [
-        "Ignore it — breaches happen all the time",
-        "Wait a few months to see if anything bad happens before acting",
-        "Delete the affected account and never use that service again",
-        "Change affected passwords, enable MFA, and monitor your accounts for suspicious activity"
-      ],
-      correctIndex: 3,
-      explanation: "Speed matters most here: change the password (and anywhere else you reused it), turn on MFA if it wasn't already on, and keep an eye on your accounts for anything unusual. Waiting or ignoring it just gives an attacker more time to use your exposed info."
-    }
-  ];
+  var QUESTIONS = QUESTION_BANKS[slug] || QUESTION_BANKS["strong-passwords"];
 
   var card = document.getElementById("quiz-card");
   if (!card) return; // this script is only wired up on quiz.html
@@ -166,18 +176,16 @@
     var correctCount = results.length - missed.length;
 
     // Persist this attempt to the backend (see POST /api/quiz/submit in
-    // index.js). Beta only has this one quiz — every lesson's "Take Quiz"
-    // button leads here, so finishing it marks every lesson complete at
-    // once server-side, not just the one the learner came from. Points,
-    // the quizzes hub's "Last score," and the profile page's Risk Awareness
-    // Score all come from this on their next read, so there's nothing to
-    // wait on here — if it fails (not logged in, network hiccup), the
-    // debrief below still shows; the attempt just won't be reflected
-    // elsewhere this time.
+    // index.js) — marks only this one lesson (`slug`) complete server-side,
+    // not the others. Points, this lesson's "Last score" on the quiz hub,
+    // and the profile page's Risk Awareness Score all come from this on
+    // their next read, so there's nothing to wait on here — if it fails
+    // (not logged in, network hiccup), the debrief below still shows; the
+    // attempt just won't be reflected elsewhere this time.
     fetch("/api/quiz/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correctCount: correctCount, questionCount: results.length })
+      body: JSON.stringify({ topicSlug: slug, correctCount: correctCount, questionCount: results.length })
     }).catch(function () {});
 
     var html =
