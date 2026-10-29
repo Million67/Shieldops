@@ -32,7 +32,7 @@
       <span class="nav-gap" aria-hidden="true"></span>
       <a class="chip chip--active" href="home.html">Home</a>
       <a class="chip chip--active" href="learn.html">Learn</a>
-      <button class="chip chip--active" type="button">Quiz</button>
+      <a class="chip chip--active" href="quizzes.html">Quiz</a>
       <a class="chip chip--active" href="profile.html">Profile</a>
       <button class="chip chip--danger" type="button" id="logout-button">Log out</button>
     </nav>
@@ -41,28 +41,27 @@
   <main class="profile">
 
     <div class="profile-hero">
-      <!--<h1 id="dashboard-title">Your Security Hub!</h1>-->
-      <h1>Your Security Hub</h1>
-      <p>View the progress you've made so far</p>
+      <h1 id="dashboard-title">Welcome, Security Learner!</h1>
+      <p>Your account and progress so far.</p>
     </div>
 
-    <!-- Points/Quizzes/Topics and the Risk Awareness Score are placeholders
-         for now — there's no points system, quiz engine, or scoring model
-         built yet. This is the layout target; the numbers come later. -->
+    <!-- Values are filled in by profile.js from GET /api/progress — see
+         index.js. They start at their "no data yet" state below and get
+         replaced once that request resolves. -->
     <section class="profile-stats" aria-label="Your stats">
       <div class="stat-card">
         <span class="stat-card-icon" aria-hidden="true">🏆</span>
-        <p class="stat-card-value">—</p>
+        <p class="stat-card-value" data-stat="points">—</p>
         <p class="stat-card-label">Points</p>
       </div>
       <div class="stat-card">
         <span class="stat-card-icon" aria-hidden="true">✏️</span>
-        <p class="stat-card-value">—</p>
-        <p class="stat-card-label">Quizzes Completed</p>
+        <p class="stat-card-value" data-stat="quizzes">—</p>
+        <p class="stat-card-label">Quizzes</p>
       </div>
       <div class="stat-card">
         <span class="stat-card-icon" aria-hidden="true">🎯</span>
-        <p class="stat-card-value">—</p>
+        <p class="stat-card-value" data-stat="topics">—</p>
         <p class="stat-card-label">Topics</p>
       </div>
     </section>
@@ -70,10 +69,10 @@
     <section class="profile-score" aria-label="Risk awareness score">
       <div class="profile-score-top">
         <p class="profile-score-title">Risk Awareness Score</p>
-        <p class="profile-score-value">—/100</p>
+        <p class="profile-score-value" data-stat="risk-score-label">—/100</p>
       </div>
       <div class="score-bar">
-        <div class="score-bar-fill" style="width: 0%;"></div>
+        <div class="score-bar-fill" data-stat="risk-score-fill" style="width: 0%;"></div>
       </div>
     </section>
 
