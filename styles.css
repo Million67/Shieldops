@@ -1737,5 +1737,5 @@ a:focus-visible, button:focus-visible {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--navy) url("chatbot-logo.png") center / cover no-repeat;
+  background: var(--navy) url("chatbot-logo.png") center / contain no-repeat;
 }
