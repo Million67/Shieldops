@@ -727,6 +727,14 @@ a:focus-visible, button:focus-visible {
   line-height: 1;
 }
 
+/* Icon beside the title (left of it) instead of stacked above — used on the Quizzes page. */
+.module-hero--inline {
+  flex-direction: row;
+  justify-content: center;
+  gap: 14px;
+}
+.module-hero--inline .module-title { margin: 0; }
+
 .module-title {
   margin: 12px 0 0;
   font-size: 30px;
