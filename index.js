@@ -300,6 +300,66 @@ app.post('/api/streak/touch', async (req, res) => {
   }
 });
 
+// ---------- Profile picture ----------
+// profile.js crops + shrinks the chosen photo to a ~256px JPEG before
+// sending it, so real uploads are tens of KB. The server doesn't trust that:
+// it caps the size and checks the bytes really are a JPEG (FF D8 FF header),
+// so nothing else can be stored or later served back as an "image".
+const AVATAR_MAX_BYTES = 200 * 1024;
+
+app.post(
+  '/api/avatar',
+  express.raw({ type: 'image/jpeg', limit: AVATAR_MAX_BYTES }),
+  async (req, res) => {
+    const user = sessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Not logged in.' });
+
+    const body = req.body;
+    const looksLikeJpeg =
+      Buffer.isBuffer(body) && body.length > 3 && body[0] === 0xff && body[1] === 0xd8 && body[2] === 0xff;
+    if (!looksLikeJpeg) {
+      return res.status(400).json({ error: 'Please choose a JPG, PNG, or WebP image.' });
+    }
+
+    try {
+      await pool.query('UPDATE users SET avatar = $1, avatar_updated_at = now() WHERE id = $2', [body, user.id]);
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      console.error('Avatar save error:', err);
+      return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+    }
+  }
+);
+
+app.get('/api/avatar', async (req, res) => {
+  const user = sessionUser(req);
+  if (!user) return res.status(401).end();
+  try {
+    const result = await pool.query('SELECT avatar FROM users WHERE id = $1', [user.id]);
+    const avatar = result.rows[0] && result.rows[0].avatar;
+    if (!avatar) return res.status(404).end();
+    res.set('Content-Type', 'image/jpeg');
+    res.set('Cache-Control', 'private, no-cache');
+    res.set('X-Content-Type-Options', 'nosniff');
+    return res.status(200).send(avatar);
+  } catch (err) {
+    console.error('Avatar fetch error:', err);
+    return res.status(500).end();
+  }
+});
+
+app.delete('/api/avatar', async (req, res) => {
+  const user = sessionUser(req);
+  if (!user) return res.status(401).json({ error: 'Not logged in.' });
+  try {
+    await pool.query('UPDATE users SET avatar = NULL, avatar_updated_at = now() WHERE id = $1', [user.id]);
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Avatar delete error:', err);
+    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
+});
+
 // Lets the dashboard (or anything else) ask who's currently logged in.
 app.get('/api/me', (req, res) => {
   if (!req.session || !req.session.user) {
