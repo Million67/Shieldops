@@ -41,8 +41,25 @@
   <main class="profile">
 
     <div class="profile-hero">
-      <h1 id="dashboard-title">Welcome, Security Learner!</h1>
-      <p>Your account and progress so far.</p>
+      <div class="profile-hero-text">
+        <h1 id="dashboard-title">Welcome, Security Learner!</h1>
+        <p>Your account and progress so far.</p>
+      </div>
+
+      <!-- Profile picture. profile.js shows the uploaded photo if there is
+           one, otherwise the generic grey silhouette. -->
+      <div class="profile-avatar-block">
+        <div class="profile-avatar" id="profile-avatar" aria-label="Your profile picture">
+          <img class="profile-avatar-default" src="default-avatar.png" alt="" aria-hidden="true">
+          <img class="profile-avatar-img" id="profile-avatar-img" alt="Your profile picture" hidden>
+        </div>
+        <div class="profile-avatar-actions">
+          <button class="profile-avatar-btn" type="button" id="avatar-change-btn">Change photo</button>
+          <button class="profile-avatar-btn profile-avatar-btn--quiet" type="button" id="avatar-remove-btn" hidden>Remove</button>
+        </div>
+        <input type="file" id="avatar-file" accept="image/jpeg,image/png,image/webp" hidden>
+        <p class="profile-avatar-error" id="avatar-error" role="alert" hidden></p>
+      </div>
     </div>
 
     <!-- Values are filled in by profile.js from GET /api/progress — see
