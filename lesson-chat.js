@@ -414,6 +414,167 @@
     };
   }
 
+  // ---- Quick scenarios ----
+  // Every SCENARIO_EVERY messages the learner sends, the tutor throws in a
+  // short "what would you do?" card with a countdown, built server-side from
+  // this lesson + the recent chat (POST /api/scenario/generate in index.js).
+  // Answers are checked on the server, which also awards the points.
+  var SCENARIO_EVERY = 3;
+  var userTurns = 0; // real messages the learner has sent (not the auto kickoff)
+  var scenarioActive = false;
+
+  function maybeOfferScenario() {
+    userTurns += 1;
+    if (userTurns % SCENARIO_EVERY !== 0 || scenarioActive) return;
+    scenarioActive = true;
+
+    fetch('/api/scenario/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topicSlug: slug, history: conversationHistory }),
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error('no scenario');
+        return response.json();
+      })
+      .then(renderScenarioCard)
+      .catch(function () {
+        // Scenarios are a bonus — if one can't be built, the chat just carries on.
+        scenarioActive = false;
+      });
+  }
+
+  function renderScenarioCard(data) {
+    var row = document.createElement('div');
+    row.className = 'chat-row chat-row--bot';
+
+    var avatar = document.createElement('div');
+    avatar.className = 'chat-avatar';
+    avatar.setAttribute('aria-hidden', 'true');
+
+    var card = document.createElement('div');
+    card.className = 'chat-bubble chat-bubble--bot scenario-card';
+
+    var topRow = document.createElement('div');
+    topRow.className = 'scenario-top';
+    var eyebrow = document.createElement('p');
+    eyebrow.className = 'scenario-eyebrow';
+    eyebrow.textContent = '⚡ Quick scenario';
+    var clock = document.createElement('span');
+    clock.className = 'scenario-clock';
+    topRow.appendChild(eyebrow);
+    topRow.appendChild(clock);
+
+    var timer = document.createElement('div');
+    timer.className = 'scenario-timer';
+    var timerFill = document.createElement('div');
+    timerFill.className = 'scenario-timer-fill';
+    timer.appendChild(timerFill);
+
+    var text = document.createElement('p');
+    text.className = 'scenario-text';
+    text.textContent = data.scenario;
+
+    var optionsEl = document.createElement('div');
+    optionsEl.className = 'scenario-options';
+
+    var resultEl = document.createElement('div');
+    resultEl.className = 'scenario-result';
+    resultEl.hidden = true;
+
+    var buttons = data.options.map(function (label, index) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'scenario-option';
+      btn.textContent = label;
+      btn.addEventListener('click', function () { submit(index); });
+      optionsEl.appendChild(btn);
+      return btn;
+    });
+
+    card.appendChild(topRow);
+    card.appendChild(timer);
+    card.appendChild(text);
+    card.appendChild(optionsEl);
+    card.appendChild(resultEl);
+    row.appendChild(avatar);
+    row.appendChild(card);
+    threadEl.appendChild(row);
+    scrollToBottom();
+
+    var totalMs = (data.timeLimitSeconds || 45) * 1000;
+    var startedAt = Date.now();
+    var finished = false;
+
+    function tick() {
+      var left = Math.max(0, totalMs - (Date.now() - startedAt));
+      var secs = Math.ceil(left / 1000);
+      clock.textContent = '0:' + (secs < 10 ? '0' : '') + secs;
+      timerFill.style.width = (left / totalMs * 100) + '%';
+      card.classList.toggle('scenario-card--urgent', left <= 10000);
+      if (left <= 0) submit(null);
+    }
+    var interval = setInterval(tick, 250);
+    tick();
+
+    function submit(choiceIndex) {
+      if (finished) return;
+      finished = true;
+      clearInterval(interval);
+      buttons.forEach(function (b) { b.disabled = true; });
+      timerFill.style.width = '0%';
+
+      fetch('/api/scenario/answer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: data.id, choiceIndex: choiceIndex }),
+      })
+        .then(function (response) {
+          if (!response.ok) throw new Error('answer failed');
+          return response.json();
+        })
+        .then(function (result) {
+          showResult(choiceIndex, result);
+        })
+        .catch(function () {
+          resultEl.hidden = false;
+          resultEl.textContent = "Couldn't check that one — the scenario may have expired. Carry on with the lesson!";
+          scenarioActive = false;
+        });
+    }
+
+    function showResult(choiceIndex, result) {
+      buttons[result.correctIndex].classList.add('scenario-option--correct');
+      if (!result.correct && choiceIndex !== null && buttons[choiceIndex]) {
+        buttons[choiceIndex].classList.add('scenario-option--wrong');
+      }
+
+      var verdict = result.timedOut ? "⏱ Time's up!" : (result.correct ? '✅ Correct!' : '❌ Not quite.');
+      resultEl.hidden = false;
+      resultEl.className = 'scenario-result ' + (result.correct ? 'scenario-result--good' : 'scenario-result--bad');
+      resultEl.innerHTML = '';
+      var v = document.createElement('p');
+      v.className = 'scenario-verdict';
+      v.textContent = verdict + (result.pointsAwarded ? '  +' + result.pointsAwarded + ' points' : '');
+      var why = document.createElement('p');
+      why.className = 'scenario-why';
+      why.textContent = result.explanation;
+      resultEl.appendChild(v);
+      resultEl.appendChild(why);
+      scrollToBottom();
+
+      // Let the tutor know how it went, so the rest of the conversation can build on it.
+      var chosenText = choiceIndex !== null && data.options[choiceIndex] ? '"' + data.options[choiceIndex] + '"' : 'nothing (ran out of time)';
+      conversationHistory.push({
+        role: 'assistant',
+        content: '[Quick scenario] ' + data.scenario + ' The learner chose ' + chosenText + ' — ' +
+          (result.timedOut ? 'timed out' : (result.correct ? 'correct' : 'incorrect')) + '. ' + result.explanation,
+      });
+
+      scenarioActive = false;
+    }
+  }
+
   // Calls the real tutor endpoint (see /api/chat in index.js). The whole
   // system-instruction/persona setup lives server-side; this just sends the
   // running conversation + which topic/checklist we're on, and applies
@@ -448,6 +609,7 @@
         conversationHistory.push({ role: 'assistant', content: data.reply });
 
         mergeCoverage(data.coverage);
+        maybeOfferScenario();
       })
       .catch(function () {
         hideTyping();
