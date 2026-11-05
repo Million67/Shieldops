@@ -17,6 +17,26 @@
       });
   }
 
+  // Daily streak chip in the header (the 🔥). Hitting this endpoint also
+  // counts today as an active day, so it runs on every signed-in page.
+  var streakChipEl = document.querySelector('.streak .chip');
+  if (streakChipEl) {
+    fetch('/api/streak/touch', { method: 'POST' })
+      .then(function (response) {
+        if (!response.ok) throw new Error('streak request failed');
+        return response.json();
+      })
+      .then(function (data) {
+        var n = data && data.streak;
+        if (typeof n !== 'number' || n < 1) return;
+        streakChipEl.textContent = n + ' day streak';
+        streakChipEl.classList.add('chip--streak');
+      })
+      .catch(function () {
+        // Not logged in / network hiccup — the default "keep streak?" text stays.
+      });
+  }
+
   // Profile is now a standalone page link in the nav, with Logout sitting
   // next to it as its own button — no more dropdown to open/close.
   if (logoutButton) {
