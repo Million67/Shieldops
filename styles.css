@@ -975,6 +975,13 @@ a:focus-visible, button:focus-visible {
   padding: 52px 20px 72px;
 }
 
+.profile-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
 .profile-hero h1 {
   margin: 0;
   font-size: 30px;
@@ -1899,4 +1906,57 @@ a:focus-visible, button:focus-visible {
   background: #fff1e0;
   color: #b4540a;
   font-weight: 700;
+}
+
+/* Profile picture (top-right of the Profile page) */
+.profile-avatar-block {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-avatar {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ccc;
+  box-shadow: 0 4px 14px rgba(3, 22, 40, 0.18);
+}
+.profile-avatar-default { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.profile-avatar-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.profile-avatar-img[hidden] { display: none; }
+
+.profile-avatar-actions { display: flex; gap: 8px; }
+.profile-avatar-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--btn-blue);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.profile-avatar-btn:hover { background: #f1f5fa; }
+.profile-avatar-btn:disabled { opacity: 0.55; cursor: default; }
+.profile-avatar-btn--quiet { color: #6e6e6e; }
+.profile-avatar-btn[hidden] { display: none; }
+
+.profile-avatar-error {
+  margin: 0;
+  max-width: 190px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: #b3261e;
+  text-align: center;
+}
+.profile-avatar-error[hidden] { display: none; }
+
+@media (max-width: 560px) {
+  .profile-hero { flex-direction: column-reverse; align-items: center; text-align: center; }
 }
