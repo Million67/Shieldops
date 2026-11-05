@@ -1960,3 +1960,49 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 560px) {
   .profile-hero { flex-direction: column-reverse; align-items: center; text-align: center; }
 }
+
+/* Quick scenario cards inside the lesson chat */
+.scenario-card {
+  width: 100%;
+  max-width: 560px;
+  border: 2px solid var(--btn-blue);
+  background: #f4f8fd;
+}
+.scenario-card--urgent { border-color: #b3261e; }
+
+.scenario-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.scenario-eyebrow { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.4px; color: var(--btn-blue); text-transform: uppercase; }
+.scenario-card--urgent .scenario-eyebrow, .scenario-card--urgent .scenario-clock { color: #b3261e; }
+.scenario-clock { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--btn-blue); }
+
+.scenario-timer { margin: 8px 0 12px; height: 6px; border-radius: 3px; background: #dbe4f0; overflow: hidden; }
+.scenario-timer-fill { height: 100%; width: 100%; background: var(--btn-blue); transition: width 0.25s linear; }
+.scenario-card--urgent .scenario-timer-fill { background: #b3261e; }
+
+.scenario-text { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
+
+.scenario-options { display: flex; flex-direction: column; gap: 8px; }
+.scenario-option {
+  text-align: left;
+  padding: 11px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font: inherit;
+  font-size: 14.5px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.scenario-option:hover:not(:disabled) { border-color: var(--btn-blue); background: #f1f6fc; }
+.scenario-option:disabled { cursor: default; color: #1a1a1a; }
+.scenario-option:disabled:not(.scenario-option--correct):not(.scenario-option--wrong) { color: #8a8f98; }
+.scenario-option--correct { border-color: #176b3a; background: #e8f5ec; font-weight: 600; }
+.scenario-option--wrong { border-color: #b3261e; background: #fdecea; }
+
+.scenario-result { margin-top: 12px; padding: 10px 12px; border-radius: 10px; font-size: 14px; line-height: 1.45; background: #fff; border: 1px solid var(--line); }
+.scenario-result[hidden] { display: none; }
+.scenario-result--good { border-color: #b9dfc6; }
+.scenario-result--bad { border-color: #f3c4c0; }
+.scenario-verdict { margin: 0 0 4px; font-weight: 700; }
+.scenario-why { margin: 0; color: #444; }
