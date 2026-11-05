@@ -387,6 +387,9 @@ a:focus-visible, button:focus-visible {
   min-height: 100dvh;
   margin: 0 auto;
   padding: 40px 16px 28px;
+  /* The global `main` rule (built for the login page) centers its content;
+     in this column layout that pushed everything down the page. Start at the top. */
+  justify-content: flex-start;
 }
 
 .dashboard-hero {
@@ -397,8 +400,8 @@ a:focus-visible, button:focus-visible {
 }
 
 .dashboard-logo {
-  width: 128px;
-  height: 128px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
 }
 
