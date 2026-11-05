@@ -300,6 +300,204 @@ app.post('/api/streak/touch', async (req, res) => {
   }
 });
 
+// ---------- Quick scenarios ----------
+// Every few messages in a lesson chat, lesson-chat.js asks for a short
+// "what would you do?" scenario built from the lesson and the recent chat.
+// The AI writes it, but the SERVER keeps the answer: the correct option is
+// shuffled in, stored in the learner's session, and never sent to the
+// browser until they've answered (or run out of time). That way the browser
+// can't just claim "I got it right" to farm points.
+const SCENARIO_TIME_LIMIT_SECONDS = 45;
+const SCENARIO_GRACE_MS = 5 * 1000; // slack for network lag past the 45s
+const SCENARIO_MIN_INTERVAL_MS = 10 * 1000; // can't spam-generate scenarios
+const SCENARIO_POINTS = 5; // per correct scenario (a quiz answer is worth 10)
+const SCENARIO_SCORED_PER_LESSON = 3; // only the first 3 correct per lesson earn points
+
+const SCENARIO_SYSTEM_INSTRUCTION = `
+You write ONE short "quick scenario" for a cybersecurity learner, like a
+quick-time event: a realistic everyday situation where they must pick the
+best action.
+
+Respond with ONLY a JSON object — no markdown, no code fences, no extra
+text — in exactly this shape:
+{"scenario": "...", "correct": "...", "wrong": ["...", "..."], "explanation": "..."}
+
+Rules:
+- "scenario": 2-3 sentences, written to the learner as "you", set in a
+  believable situation (work, school, shopping, social media...).
+- It must be about the lesson topic provided, and where possible build on
+  what the learner and tutor just discussed.
+- "correct": the single best action, under 110 characters.
+- "wrong": exactly two plausible-but-flawed actions, under 110 characters
+  each, similar in length and tone to the correct one so the answer isn't
+  obvious from wording. Make them tempting, not silly.
+- "explanation": 1-2 sentences on why the correct action is best.
+- Never ask for real passwords or personal details. Plain text only.
+`.trim();
+
+function shuffleInPlace(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = require('crypto').randomInt(i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Pulls the JSON object out of the model's reply (tolerating stray text or
+// code fences around it) and checks every field is the shape we expect.
+function parseScenarioReply(raw) {
+  const start = raw.indexOf('{');
+  const end = raw.lastIndexOf('}');
+  if (start === -1 || end <= start) return null;
+  let obj;
+  try {
+    obj = JSON.parse(raw.slice(start, end + 1));
+  } catch (e) {
+    return null;
+  }
+  const isText = (v) => typeof v === 'string' && v.trim().length > 0 && v.length <= 600;
+  if (!obj || !isText(obj.scenario) || !isText(obj.correct) || !isText(obj.explanation)) return null;
+  if (!Array.isArray(obj.wrong) || obj.wrong.length !== 2 || !obj.wrong.every(isText)) return null;
+  return {
+    scenario: obj.scenario.trim(),
+    correct: obj.correct.trim(),
+    wrong: obj.wrong.map((w) => w.trim()),
+    explanation: obj.explanation.trim(),
+  };
+}
+
+app.post('/api/scenario/generate', async (req, res) => {
+  const user = sessionUser(req);
+  if (!user) return res.status(401).json({ error: 'Not logged in.' });
+
+  try {
+    if (!process.env.GROQ_API_KEY) {
+      return res.status(500).json({ error: 'The tutor is not configured yet.' });
+    }
+
+    const { topicSlug, history } = req.body || {};
+    const topic = typeof topicSlug === 'string' ? LESSON_CHECKLISTS[topicSlug] : null;
+    if (!topic) return res.status(400).json({ error: 'Unknown lesson.' });
+
+    const now = Date.now();
+    if (req.session.lastScenarioAt && now - req.session.lastScenarioAt < SCENARIO_MIN_INTERVAL_MS) {
+      return res.status(429).json({ error: 'Slow down a little.' });
+    }
+    req.session.lastScenarioAt = now;
+
+    const recent = Array.isArray(history)
+      ? history
+          .filter((t) => t && (t.role === 'user' || t.role === 'assistant') && typeof t.content === 'string')
+          .slice(-8)
+          .map((t) => (t.role === 'user' ? 'Learner: ' : 'Tutor: ') + t.content.slice(0, 1200))
+          .join('\n\n')
+      : '';
+
+    const concepts = topic.concepts.map((c) => '- ' + c.label).join('\n');
+    const userPrompt =
+      `Lesson: ${topic.title}\nConcepts in this lesson:\n${concepts}\n\n` +
+      `Recent conversation:\n${recent || '(none yet)'}\n\nWrite the scenario now.`;
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + process.env.GROQ_API_KEY,
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-oss-20b',
+        messages: [
+          { role: 'system', content: SCENARIO_SYSTEM_INSTRUCTION },
+          { role: 'user', content: userPrompt },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Groq scenario error:', response.status, await response.text());
+      return res.status(502).json({ error: "Couldn't build a scenario right now." });
+    }
+
+    const data = await response.json();
+    const raw = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    const parsed = raw ? parseScenarioReply(raw) : null;
+    if (!parsed) {
+      console.error('Scenario reply had an unexpected shape:', raw);
+      return res.status(502).json({ error: "Couldn't build a scenario right now." });
+    }
+
+    // Put the correct answer in a random slot, and remember where it went.
+    const options = shuffleInPlace([parsed.correct, ...parsed.wrong]);
+    const id = require('crypto').randomUUID();
+    req.session.scenario = {
+      id,
+      topicSlug,
+      scenario: parsed.scenario,
+      options,
+      correctIndex: options.indexOf(parsed.correct),
+      explanation: parsed.explanation,
+      issuedAt: now,
+    };
+
+    return res.status(200).json({
+      id,
+      scenario: parsed.scenario,
+      options,
+      timeLimitSeconds: SCENARIO_TIME_LIMIT_SECONDS,
+    });
+  } catch (err) {
+    console.error('Scenario generate error:', err);
+    return res.status(500).json({ error: 'Something went wrong.' });
+  }
+});
+
+// choiceIndex: 0-2, or null when the countdown ran out. The server also
+// checks the clock itself, so a late answer counts as a timeout no matter
+// what the browser says.
+app.post('/api/scenario/answer', async (req, res) => {
+  const user = sessionUser(req);
+  if (!user) return res.status(401).json({ error: 'Not logged in.' });
+
+  const { id, choiceIndex } = req.body || {};
+  const pending = req.session.scenario;
+  if (!pending || typeof id !== 'string' || pending.id !== id) {
+    return res.status(404).json({ error: 'That scenario has expired.' });
+  }
+  delete req.session.scenario; // one answer per scenario, no retries
+
+  const elapsed = Date.now() - pending.issuedAt;
+  const validChoice = Number.isInteger(choiceIndex) && choiceIndex >= 0 && choiceIndex < pending.options.length;
+  const timedOut = !validChoice || elapsed > SCENARIO_TIME_LIMIT_SECONDS * 1000 + SCENARIO_GRACE_MS;
+  const correct = !timedOut && choiceIndex === pending.correctIndex;
+
+  let pointsAwarded = 0;
+  try {
+    if (correct) {
+      const prior = await pool.query(
+        'SELECT COUNT(*)::int AS n FROM scenario_attempts WHERE user_id = $1 AND topic_slug = $2 AND correct',
+        [user.id, pending.topicSlug]
+      );
+      if (prior.rows[0].n < SCENARIO_SCORED_PER_LESSON) pointsAwarded = SCENARIO_POINTS;
+    }
+    await pool.query(
+      'INSERT INTO scenario_attempts (user_id, topic_slug, correct, timed_out) VALUES ($1, $2, $3, $4)',
+      [user.id, pending.topicSlug, correct, timedOut]
+    );
+  } catch (err) {
+    // The learner still gets their result even if saving it failed.
+    console.error('Scenario save error:', err);
+    pointsAwarded = 0;
+  }
+
+  return res.status(200).json({
+    correct,
+    timedOut,
+    correctIndex: pending.correctIndex,
+    explanation: pending.explanation,
+    pointsAwarded,
+  });
+});
+
 // ---------- Profile picture ----------
 // profile.js crops + shrinks the chosen photo to a ~256px JPEG before
 // sending it, so real uploads are tens of KB. The server doesn't trust that:
@@ -403,7 +601,7 @@ app.get('/api/progress', async (req, res) => {
   }
 
   try {
-    const [topicRows, aggRow, lastScoreRows, recentRows, userRow] = await Promise.all([
+    const [topicRows, aggRow, lastScoreRows, recentRows, userRow, scenarioRow] = await Promise.all([
       pool.query(
         'SELECT topic_slug, completed, completed_at FROM topic_progress WHERE user_id = $1',
         [user.id]
@@ -432,6 +630,20 @@ app.get('/api/progress', async (req, res) => {
         [user.id, RECENT_ACTIVITY_LIMIT]
       ),
       pool.query('SELECT quiz_exit_count FROM users WHERE id = $1', [user.id]),
+      // Correct quick-scenario answers, capped per lesson. If the table isn't
+      // there yet (schema.sql not re-run), log it and count 0 instead of
+      // taking the whole progress endpoint down.
+      pool
+        .query(
+          `SELECT COALESCE(SUM(LEAST(cnt, $2)), 0)::int AS scored
+             FROM (SELECT COUNT(*) AS cnt FROM scenario_attempts
+                    WHERE user_id = $1 AND correct GROUP BY topic_slug) t`,
+          [user.id, SCENARIO_SCORED_PER_LESSON]
+        )
+        .catch((err) => {
+          console.error('Scenario points query failed (is scenario_attempts created?):', err.message);
+          return { rows: [{ scored: 0 }] };
+        }),
     ]);
 
     const topics = {};
@@ -476,7 +688,7 @@ app.get('/api/progress', async (req, res) => {
       topics,
       recentActivity,
       stats: {
-        points: totalCorrect * POINTS_PER_CORRECT_ANSWER,
+        points: totalCorrect * POINTS_PER_CORRECT_ANSWER + scenarioRow.rows[0].scored * SCENARIO_POINTS,
         quizzesCompleted,
         topicsCompleted,
         totalTopics: TOPIC_SLUGS.length,
