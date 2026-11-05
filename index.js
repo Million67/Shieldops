@@ -103,6 +103,31 @@ function isPasswordStrongEnough(password) {
   return true;
 }
 
+// ---------- Daily streak ----------
+// A "day" is a calendar day in STREAK_TIMEZONE (not the server's UTC clock,
+// or the streak would roll over at 7pm Eastern). Logging in — or opening any
+// signed-in page, which covers people whose 7-day session cookie keeps them
+// logged in — counts that day. Active yesterday: streak +1. Already counted
+// today: unchanged. Missed a day or more: back to 1.
+const STREAK_TIMEZONE = process.env.STREAK_TIMEZONE || 'America/New_York';
+
+async function touchStreak(userId) {
+  const result = await pool.query(
+    `UPDATE users
+        SET streak_count = CASE
+              WHEN last_active_date = t.d THEN streak_count
+              WHEN last_active_date = t.d - 1 THEN streak_count + 1
+              ELSE 1
+            END,
+            last_active_date = t.d
+       FROM (SELECT (now() AT TIME ZONE $2)::date AS d) t
+      WHERE users.id = $1
+      RETURNING users.streak_count`,
+    [userId, STREAK_TIMEZONE]
+  );
+  return result.rows[0] ? result.rows[0].streak_count : 0;
+}
+
 function requireAuth(req, res, next) {
   if (req.session && req.session.user) {
     return next();
@@ -236,6 +261,9 @@ app.post('/api/login', async (req, res) => {
       email: user.email,
     };
 
+    // Logging in counts as today's activity. Never let a streak hiccup block a login.
+    await touchStreak(user.id).catch((err) => console.error('Streak update error:', err));
+
     return res.status(200).json({ success: true });
   } catch (err) {
     console.error('Login error:', err);
@@ -255,6 +283,21 @@ app.post('/api/logout', (req, res) => {
     res.clearCookie('threattalk.sid');
     return res.status(200).json({ success: true });
   });
+});
+
+// Called by dashboard.js on every signed-in page load: counts today as an
+// active day (a no-op if it already counted) and returns the current streak
+// for the header chip.
+app.post('/api/streak/touch', async (req, res) => {
+  const user = sessionUser(req);
+  if (!user) return res.status(401).json({ error: 'Not logged in.' });
+  try {
+    const streak = await touchStreak(user.id);
+    return res.status(200).json({ streak });
+  } catch (err) {
+    console.error('Streak error:', err);
+    return res.status(500).json({ error: 'Something went wrong. Please try again.' });
+  }
 });
 
 // Lets the dashboard (or anything else) ask who's currently logged in.
