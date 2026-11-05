@@ -1893,3 +1893,10 @@ a:focus-visible, button:focus-visible {
   .fchat { right: 16px; bottom: 16px; }
   .fchat-panel { width: calc(100vw - 32px); height: calc(100vh - 120px); }
 }
+
+/* Header streak chip once there's an active streak ("3 day streak") */
+.chip--streak {
+  background: #fff1e0;
+  color: #b4540a;
+  font-weight: 700;
+}
