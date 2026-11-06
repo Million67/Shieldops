@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About Us · ThreatTalk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .about {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 20px 72px;
+      text-align: center;
+    }
+
+    .about-title {
+      margin: 0;
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #111111;
+    }
+
+    .about-subtitle {
+      margin: 6px 0 0;
+      font-size: 32px;
+      font-weight: 500;
+      color: #2c5a97;
+    }
+
+    .team-grid {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+      text-align: left;
+    }
+
+    .member {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .member-photo-frame {
+      background: #0b1a2b;
+      border-radius: 22px;
+      padding: 20px 14px;
+    }
+
+    .member-photo {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      background: #1c2a3c;
+    }
+
+    .member-card {
+      margin-top: -14px;
+      margin-left: 6px;
+      margin-right: 6px;
+      position: relative;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 16px 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      font-size: 13px;
+      line-height: 1.5;
+      color: #333;
+    }
+
+    .member-name {
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      color: #111111;
+    }
+
+    .member-card p {
+      margin: 0 0 10px;
+    }
+
+    .member-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .member-contact {
+      font-weight: 600;
+    }
+
+    @media (max-width: 1000px) {
+      .team-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 680px) {
+      .about-title { font-size: 40px; }
+      .about-subtitle { font-size: 24px; }
+      .team-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <img class="brand-logo" src="logo.png" alt="ShieldOps logo">
+      <div>
+        <p class="brand-name">ThreatTalk</p>
+        <p class="brand-tagline">Reimagining of cybersecurity through intelligent, adaptive conversation.</p>
+      </div>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      <a class="nav-link nav-link--active" href="about.html">About Us</a>
+      <button class="nav-icon" type="button" aria-label="Leaderboard">🏆</button>
+      <button class="nav-icon" type="button" aria-label="Language">🌐</button>
+      <div class="streak">
+        <button class="nav-icon" type="button" aria-label="Daily streak">🔥</button>
+        <span class="chip">keep streak?</span>
+      </div>
+      <span class="nav-gap" aria-hidden="true"></span>
+      <a class="chip chip--active" href="home.html">Home</a>
+      <a class="chip chip--active" href="learn.html">Learn</a>
+      <a class="chip chip--active" href="quizzes.html">Quiz</a>
+      <a class="chip chip--active" href="profile.html">Profile</a>
+      <button class="chip chip--danger" type="button" id="logout-button">Log out</button>
+    </nav>
+  </header>
+
+  <main class="about">
+
+    <h1 class="about-title">ShieldOps</h1>
+    <p class="about-subtitle">Meet the Team</p>
+
+    <section class="team-grid" aria-label="Team members">
+
+      <article class="member">
+        <div class="member-photo-frame">
+          <img class="member-photo" src="moya.jpg" alt="Moya Butts">
+        </div>
+        <div class="member-card">
+          <p class="member-name">Moya Butts</p>
+          <p>I am a current student at Florida Agricultural and Mechanical University and I am originally from Atlanta, Georgia.</p>
+          <p>My role is UI/UX developer and I am responsible for planning and designing the user interface.</p>
+          <p>I plan to work as a cybersecurity analyst after college.</p>
+          <p class="member-contact">Contact details: 404.789.0981<br>moya1.butts@famu.edu</p>
+        </div>
+      </article>
+
+      <article class="member">
+        <div class="member-photo-frame">
+          <img class="member-photo" src="tyson.jpg" alt="Tyson Laws">
+        </div>
+        <div class="member-card">
+          <p class="member-name">Tyson Laws</p>
+          <p>I am a current student at Florida Agricultural and Mechanical University and I am originally from Tallahassee, Florida.</p>
+          <p>My role is assistant team lead and I am responsible for supporting the team lead when needed and helping with task distribution. I am skilled in back-end development, proficient in HTML, data analysis, and database management.</p>
+          <p>I plan to work as a data analyst after college.</p>
+          <p class="member-contact">Contact details: 850.570.6488<br>tyson1.laws@famu.edu</p>
+        </div>
+      </article>
+
+      <article class="member">
+        <div class="member-photo-frame">
+          <img class="member-photo" src="nicholas.jpg" alt="Nicholas Strachan">
+        </div>
+        <div class="member-card">
+          <p class="member-name">Nicholas Strachan</p>
+          <p>I am a current student at Florida Agricultural and Mechanical University and I am originally from Nassau, Bahamas.</p>
+          <p>My role is software developer and I am responsible for setting deadlines and organizing and leading team meetings. I am skilled in software development and I have an intermediate level of understanding in SQL.</p>
+          <p>I plan to work as a Cybersecurity specialist after college.</p>
+          <p class="member-contact">Contact details: 850.566.9808<br>nicholas1.strachan@famu.edu</p>
+        </div>
+      </article>
+
+      <article class="member">
+        <div class="member-photo-frame">
+          <img class="member-photo" src="reginald.jpg" alt="Reginald Huff">
+        </div>
+        <div class="member-card">
+          <p class="member-name">Reginald Huff</p>
+          <p>I am a current student at Florida Agricultural and Mechanical University and I am originally from Atlanta, Georgia.</p>
+          <p>My role is quality assurance and I am responsible for reviewing the chatbot for accuracy, testing the different features, and makes changes to the chatbot and wireframes.</p>
+          <p>I plan to pursue a career as a cybersecurity analyst after graduation.</p>
+          <p class="member-contact">Contact details: 770.731.9599<br>reginald1.huff@famu.edu</p>
+        </div>
+      </article>
+
+      <article class="member">
+        <div class="member-photo-frame">
+          <img class="member-photo" src="jayden.jpg" alt="Jayden Bradford">
+        </div>
+        <div class="member-card">
+          <p class="member-name">Jayden Bradford</p>
+          <p>I am a current student at Florida Agricultural and Mechanical University and I am originally from Orlando, Florida.</p>
+          <p>My role is security engineer and I am responsible for identifying threats, perform risk assessments, and test security features.</p>
+          <p>I will pursue a career as an IT network specialist.</p>
+          <p class="member-contact">Contact details: 407.572.6625<br>jayden1.bradford@famu.edu</p>
+        </div>
+      </article>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
