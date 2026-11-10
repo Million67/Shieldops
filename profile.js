@@ -38,12 +38,14 @@
       if (scoreLabelEl) scoreLabelEl.textContent = riskScore + '/100';
       if (scoreFillEl) {
         scoreFillEl.style.width = riskScore + '%';
-        // Red 0-65, yellow 66-85, green 86-100.
-        scoreFillEl.classList.remove('score-bar-fill--red', 'score-bar-fill--yellow', 'score-bar-fill--green');
-        if (riskScore <= 65) {
+        // Red 0-60, yellow 61-78, light green 79-89, green 90-100.
+        scoreFillEl.classList.remove('score-bar-fill--red', 'score-bar-fill--yellow', 'score-bar-fill--lightgreen', 'score-bar-fill--green');
+        if (riskScore <= 60) {
           scoreFillEl.classList.add('score-bar-fill--red');
-        } else if (riskScore <= 85) {
+        } else if (riskScore <= 78) {
           scoreFillEl.classList.add('score-bar-fill--yellow');
+        } else if (riskScore <= 89) {
+          scoreFillEl.classList.add('score-bar-fill--lightgreen');
         } else {
           scoreFillEl.classList.add('score-bar-fill--green');
         }
