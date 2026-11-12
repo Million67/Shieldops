@@ -2018,3 +2018,21 @@ a:focus-visible, button:focus-visible {
 .scenario-result--bad { border-color: #f3c4c0; }
 .scenario-verdict { margin: 0 0 4px; font-weight: 700; }
 .scenario-why { margin: 0; color: #444; }
+
+/* Password Security page — "coming soon" lesson cards. Not clickable, dimmed, dashed. */
+.topic-section-label {
+  margin: 36px 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #777;
+}
+.topic-card--soon {
+  opacity: 0.6;
+  border-style: dashed;
+  cursor: default;
+  box-shadow: none;
+}
+.topic-card--soon:hover {
+  background: #fafafa;
+  box-shadow: none;
+}
