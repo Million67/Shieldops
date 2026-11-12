@@ -39,3 +39,21 @@
       // "Not started" markup.
     });
 })();
+
+// Password Security row — the arrow slides between the live quizzes and the
+// "coming soon" ones, and moves to the left edge while on the second page.
+(function () {
+  var arrow = document.getElementById('quiz-arrow');
+  var track = document.getElementById('quiz-track');
+  if (!arrow || !track) return;
+
+  arrow.addEventListener('click', function () {
+    var onSecondPage = track.classList.toggle('is-page2');
+    arrow.innerHTML = onSecondPage ? '&larr;' : '&rarr;';
+    arrow.classList.toggle('is-left', onSecondPage);
+    arrow.setAttribute(
+      'aria-label',
+      onSecondPage ? 'Back to the first quizzes' : 'See more Password Security quizzes'
+    );
+  });
+})();
