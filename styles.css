@@ -2112,3 +2112,100 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 700px) {
   .profile-rank-grid { grid-template-columns: 1fr; }
 }
+
+/* ==========================================================
+   Colorway — navy header, cool page background, cyan accents,
+   and a color per topic. Everything here overrides the earlier
+   neutral styles, so it sits at the end of the file.
+   ========================================================== */
+:root {
+  --bg: #f2f6fb;
+  --line: #d9e3f0;
+  --chip-bg: #e6eef8;
+  --link: #0f2a5a;
+  --btn-blue: #1b4f9c;
+
+  --accent-cyan: #22b8e8;
+  --accent-cyan-text: #0e86b0;
+  --topic-phishing: #3b82f6;
+  --topic-password: #14a38b;
+  --topic-mfa: #7c5cdb;
+  --topic-data: #e8743b;
+  --topic-browsing: #0ea5e9;
+  --topic-report: #e5484d;
+}
+
+/* Header */
+.site-header { background: #0a1a33; border-top: 0; border-bottom: 3px solid var(--accent-cyan); }
+.brand-name { color: #ffffff; }
+.brand-tagline { color: #9fb3d1; }
+.nav-link, .nav-link--active { color: #dbe7fa; }
+.nav-link:hover { color: #ffffff; }
+.nav-icon { color: #ffffff; }
+.chip--active { background: #17325e; color: #e6f0ff; }
+.chip--active:hover { background: #1f417a; }
+.chip--streak { background: #ffedd6; color: #b4540a; }
+
+/* Cards */
+.feature-card, .home-card, .stat-card, .profile-rank, .profile-score, .topic-card { background: #ffffff; }
+.feature-card:hover, .home-card--link:hover { background: #f7fbff; }
+.topic-card:hover { background: #f7fbff; }
+.topic-card--soon, .topic-card--soon:hover { background: #fafcff; }
+.dashboard-divider { border-color: #cfdced; }
+
+/* Home */
+.home-banner { background: #e1ecfa; border-left: 5px solid var(--accent-cyan); }
+.home-banner-eyebrow, .home-card-eyebrow { color: var(--accent-cyan-text); }
+.home-card-cta { color: #0e7fb0; }
+#recommended-card { border-left: 5px solid var(--topic-password); }
+.home-sections--extra .home-card:not(#recommended-card) { border-left: 5px solid #f5a524; }
+.progress-row { border-color: #e3ebf5; }
+
+/* Badges */
+.status-badge { background: #e3edf9; color: #4a6384; }
+.status-badge--complete { background: #e1f3e8; color: #176b3a; }
+
+/* Learn — one color per topic */
+.feature-card { border-left: 5px solid var(--tc, var(--accent-cyan)); }
+.feature-card:nth-child(1) { --tc: var(--topic-phishing); }
+.feature-card:nth-child(2) { --tc: var(--topic-password); }
+.feature-card:nth-child(3) { --tc: var(--topic-mfa); }
+.feature-card:nth-child(4) { --tc: var(--topic-data); }
+.feature-card:nth-child(5) { --tc: var(--topic-browsing); }
+.feature-card:nth-child(6) { --tc: var(--topic-report); }
+.feature-card .feature-icon { background: color-mix(in srgb, var(--tc) 16%, #ffffff); }
+
+/* Password Security lessons + Quiz Hub rows use the Password Security color */
+.topic-card:not(.topic-card--soon) { border-left: 5px solid var(--topic-password); }
+.quiz-section-title { padding-left: 12px; border-left: 5px solid var(--tc, var(--accent-cyan)); }
+.quiz-section:nth-of-type(1) { --tc: var(--topic-password); }
+.quiz-section:nth-of-type(2) { --tc: var(--topic-phishing); }
+.quiz-section:nth-of-type(3) { --tc: var(--topic-mfa); }
+.quiz-section:nth-of-type(4) { --tc: var(--topic-data); }
+.quiz-section:nth-of-type(5) { --tc: var(--topic-browsing); }
+.quiz-section .topic-card:not(.topic-card--soon) { border-left: 1px solid var(--line); }
+
+/* ==========================================================
+   Accessibility — text contrast fixes (WCAG 2.1 AA, 4.5:1 for
+   normal text). Kept in one block so the colors are easy to find.
+   ========================================================== */
+.chip { color: #4a4a4a; }
+.chip--streak { color: #8f4106; }
+.chip--danger { background: #c8323a; color: #ffffff; }
+.chip--danger:hover { background: #a82a31; }
+.home-banner-eyebrow, .home-card-eyebrow { color: #0a6180; }
+.home-card-cta { color: #0a6a8f; }
+.topic-section-label { color: #596070; }
+.chat-timestamp { color: #595959; }
+.profile-rank-badge { color: #555555; }
+.profile-rank-value { color: #6b6b6b; }
+
+/* "Coming soon" cards: signal "not available" with a dashed border and a
+   lighter surface instead of fading the text (faded text fails contrast). */
+.topic-card--soon { opacity: 1; }
+.topic-card--soon .topic-title,
+.topic-card--soon .topic-description,
+.topic-card--soon .quiz-card-score { color: #5b6573; }
+.topic-card--soon .topic-icon { opacity: 0.55; }
+.topic-card--soon .status-badge { background: #eef2f7; color: #4f5b6b; }
+.chip.chip--active { color: #e6f0ff; }
