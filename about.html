@@ -35,7 +35,7 @@
     .team-grid {
       margin-top: 40px;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 18px;
       text-align: left;
     }
@@ -94,8 +94,8 @@
       font-weight: 600;
     }
 
-    @media (max-width: 1000px) {
-      .team-grid { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 1200px) {
+      .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
 
     @media (max-width: 680px) {
