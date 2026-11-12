@@ -49,7 +49,10 @@
     <!-- Cards are filled in by quizzes.js from the real backend
          (GET /api/progress). Each lesson has its own quiz now — completing
          one only marks that one lesson/card complete, see quiz.js. -->
-    <div class="topic-grid" id="quiz-grid">
+    <section class="quiz-section">
+      <h2 class="quiz-section-title">Password Security</h2>
+      <div class="quiz-row">
+        <div class="quiz-viewport"><div class="quiz-track" id="quiz-track"><div class="topic-grid quiz-page" id="quiz-grid">
       <div class="topic-card" data-topic="strong-passwords">
         <div class="topic-card-top">
           <span class="topic-icon" aria-hidden="true">🧱</span>
@@ -80,6 +83,62 @@
         <a class="chat-complete-btn" style="align-self: flex-start;" data-action-for="after-a-breach" href="quiz.html?topic=after-a-breach">Start Quiz</a>
       </div>
     </div>
+        <div class="topic-grid quiz-page"><div class="topic-card topic-card--soon" aria-disabled="true">
+            <div class="topic-card-top"><span class="topic-icon" aria-hidden="true">🪪</span><span class="status-badge">Coming soon</span></div>
+            <h3 class="topic-title">Passkeys &amp; Passwordless Sign-in</h3>
+            <p class="quiz-card-score">Quiz in development</p>
+          </div><div class="topic-card topic-card--soon" aria-disabled="true">
+            <div class="topic-card-top"><span class="topic-icon" aria-hidden="true">🎣</span><span class="status-badge">Coming soon</span></div>
+            <h3 class="topic-title">Spotting Password Phishing</h3>
+            <p class="quiz-card-score">Quiz in development</p>
+          </div><div class="topic-card topic-card--soon" aria-disabled="true">
+            <div class="topic-card-top"><span class="topic-icon" aria-hidden="true">♻️</span><span class="status-badge">Coming soon</span></div>
+            <h3 class="topic-title">Account Recovery Safety</h3>
+            <p class="quiz-card-score">Quiz in development</p>
+          </div></div></div></div>
+        <button class="quiz-row-arrow" id="quiz-arrow" type="button" aria-label="See more Password Security quizzes">&rarr;</button>
+      </div>
+    </section>
+    <section class="quiz-section">
+      <h2 class="quiz-section-title">Phishing Emails</h2>
+      <div class="topic-grid">
+        <div class="topic-card topic-card--soon" aria-disabled="true">
+          <div class="topic-card-top"><span class="topic-icon" aria-hidden="true">🚧</span><span class="status-badge">Coming soon</span></div>
+          <h3 class="topic-title">More coming in development</h3>
+          <p class="quiz-card-score">New quizzes are on the way.</p>
+        </div>
+      </div>
+    </section>
+    <section class="quiz-section">
+      <h2 class="quiz-section-title">Multi-Factor Authentication</h2>
+      <div class="topic-grid">
+        <div class="topic-card topic-card--soon" aria-disabled="true">
+          <div class="topic-card-top"><span class="topic-icon" aria-hidden="true">🚧</span><span class="status-badge">Coming soon</span></div>
+          <h3 class="topic-title">More coming in development</h3>
+          <p class="quiz-card-score">New quizzes are on the way.</p>
+        </div>
+      </div>
+    </section>
+    <section class="quiz-section">
+      <h2 class="quiz-section-title">Data Protection</h2>
+      <div class="topic-grid">
+        <div class="topic-card topic-card--soon" aria-disabled="true">
+          <div class="topic-card-top"><span class="topic-icon" aria-hidden="true">🚧</span><span class="status-badge">Coming soon</span></div>
+          <h3 class="topic-title">More coming in development</h3>
+          <p class="quiz-card-score">New quizzes are on the way.</p>
+        </div>
+      </div>
+    </section>
+    <section class="quiz-section">
+      <h2 class="quiz-section-title">Safe Browsing</h2>
+      <div class="topic-grid">
+        <div class="topic-card topic-card--soon" aria-disabled="true">
+          <div class="topic-card-top"><span class="topic-icon" aria-hidden="true">🚧</span><span class="status-badge">Coming soon</span></div>
+          <h3 class="topic-title">More coming in development</h3>
+          <p class="quiz-card-score">New quizzes are on the way.</p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Privacy & Cookie Banner (starts hidden — opened only via the ⓘ icon above) -->
