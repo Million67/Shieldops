@@ -24,5 +24,5 @@ Database: PostgreSQL
 
 Version Control: GitHub
 
-# Team & Credits
+# Credits
 Developed by ShieldOps.
