@@ -11,18 +11,18 @@ ThreatTalk is an interactive security training platform designed to simulate var
 
 # Tech Architecture
 Frontend: 
--HTML, CSS, and Javascript
+- HTML, CSS, and Javascript
 
 
 Backend: 
--Node.js with Express
--Session-based login with  hashed password encryption
--PostgreSQL database
--Hosted on Railway and Render
+- Node.js with Express
+- Session-based login with  hashed password encryption
+- PostgreSQL database
+- Hosted on Railway and Render
 
 
 Ai Model: 
--Groq API
+- Groq API
 
 
 Version Control: 
