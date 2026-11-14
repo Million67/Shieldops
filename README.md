@@ -10,13 +10,19 @@ https://shieldops-production.up.railway.app/
 ThreatTalk is an interactive security training platform designed to simulate various cybersecurity realated threats. It aims to help organizations train users and measure security awareness in an engaging, real-time environment.
 
 # Tech Architecture
-Frontend:
+Frontend: HTML, CSS, and Javascript
 
 
-Backend:
+Backend: Node.js with Express, hosted on Railway and Render
 
 
-Ai Model:
+Ai Model: Groq API
+
+
+Database: PostgreSQL
+
+
+Version Control: GitHub
 
 # Team & Credits
 Developed by ShieldOps.
